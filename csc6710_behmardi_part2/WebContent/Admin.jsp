@@ -50,7 +50,7 @@
     <div>
 	<h2 style="text-align:center">
 	    <c:if test="${showInitMsg != null}">
-	        <font color="green">All tables are initialized!</font>
+	        <font color="green">All tables are successfully initialized!</font>
 	    </c:if>
 	</h2>
     </div>

@@ -138,8 +138,9 @@ public class ControllerServlet extends HttpServlet
 		
 		if (isRootUser.equals("TRUE"))
 		{
-			/* list the users in the browser */
-			response.sendRedirect("listUsers");
+			/* refresh page */
+			RequestDispatcher dispatcher = request.getRequestDispatcher("Admin.jsp");
+			dispatcher.forward(request, response);
 		}
 		else
 		{
