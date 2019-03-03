@@ -40,7 +40,7 @@
     <div>
 	<h2 style="text-align:center">
 	    <c:if test="${message != null && color != null}">
-	        <font color=<c:out value="${color}"></c:out>><c:out value="${message}"></c:out></font>
+	        <font color="<c:out value='${color}'/>"><c:out value='${message}'/></font>
 	    </c:if>
 	</h2>
     </div>

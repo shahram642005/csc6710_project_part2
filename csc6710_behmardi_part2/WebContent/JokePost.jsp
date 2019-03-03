@@ -6,8 +6,27 @@
 	<title>Post Joke</title>
 </head>
 <body>
+	<table style="padding-bottom:50">
+	<col width="600">
+	<col width="600">
+	<col width="600">
+		<tr>
+			<c:choose>
+				<c:when test="${gender == null}">
+					<th align="left"><a href="modifyUser?userId=0"><img src="images/nogenderProfile.png" height="100px" width="100px"></a></th>
+				</c:when>
+				<c:when test="${gender eq 'Male'}">
+					<th align="left"><a href="modifyUser?userId=0"><img src="images/maleProfile.png" height="100px" width="100px"></a></th>
+				</c:when>
+				<c:otherwise>
+					<th align="left"><a href="modifyUser?userId=0"><img src="images/femaleProfile.png" height="100px" width="100px"></a></th>
+				</c:otherwise>
+			</c:choose>
+			<th align="center"><h1><c:out value='${formText}' /><img src="images/funny.png" height="70px" width="70px"></h1></th>
+			<th align="right"><a href="logoutUser"><img src="images/logout.png" title="log out" height="70px" width="70px"></a></th>
+		</tr>
+	</table>
     <div align="center">
-    	<h2><c:out value='${formText}' /></h2>
     	<form action=<c:out value="${formAction}" /> method="post">
 	        <table>
 	        	<tr>

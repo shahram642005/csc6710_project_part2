@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /***************************************************
  * UserDAO.java
@@ -78,21 +79,12 @@ public class ControllerServlet extends HttpServlet
             case "/modifyUser":
                 goToUserEditForm(request, response);
                 break;
-            case "/banUser":
-                //banUser(request, response);
-                break;
-            case "/unbanUser":
-            	//unbanUser(request, response);
-                break;
             case "/updateUser":
                 updateUser(request, response);
                 break;
             case "/newJoke":
             	goToJokePostForm(request, response);
                 break;
-            case "/reviewJoke":
-            	//reviewJoke(request, response);
-            	break;
             case "/postJoke":
                 postJoke(request, response);
                 break;
@@ -108,8 +100,20 @@ public class ControllerServlet extends HttpServlet
             case "/updateJoke":
                 updateJoke(request, response);
                 break;
+            case "/searchJoke":
+            	//searchJoke(request, response);
+                //break;
+            case "/reviewJoke":
+            	//reviewJoke(request, response);
+            	//break;
+            case "/banUser":
+                //banUser(request, response);
+                //break;
+            case "/unbanUser":
+            	//unbanUser(request, response);
+                //break;
             default:
-                break;
+            	throw new ServletException("The action \"" + action + "\" has not been implemented yet!");
             }
         }
         catch (SQLException ex)
@@ -229,6 +233,10 @@ public class ControllerServlet extends HttpServlet
 		}
 		else /* successful login */
 		{
+			/* add userId to session */
+			HttpSession session = request.getSession();
+			session.setAttribute("userId", user.getUserId());
+			
 			if (userName.equals("root"))	/* if it's the root user */
 			{
 				RequestDispatcher dispatcher = request.getRequestDispatcher("Admin.jsp");
@@ -245,6 +253,10 @@ public class ControllerServlet extends HttpServlet
 	/* check if user is in database and it's user name and password match the User table */
 	private void logoutUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
+		/* remove userId from session */
+		HttpSession session = request.getSession();
+		session.setAttribute("userId", null);
+		
 		/* show a message indicating successful logout */
 		String message = "You are successfully logged out!";
 		String color = "green";
@@ -288,6 +300,10 @@ public class ControllerServlet extends HttpServlet
 	/* go to User edit form */
 	private void goToUserEditForm(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		
 		/* get the userId of the user */
 		int userId = Integer.parseInt(request.getParameter("userId"));
 		User user = new User();
@@ -298,12 +314,9 @@ public class ControllerServlet extends HttpServlet
 			user = userDAO.getUser(userId);
 		}
 		else /* the current logged in user is trying to modify its profile */
-		{
-			/* get current session's userId */
-			userId = 2; /********** should be changed to current session's user */
-			
+		{			
 			/* get the user information based on the userId */
-			user = userDAO.getUser(userId);
+			user = userDAO.getUser(sessionUserId);
 		}
 			
 		/* determine form variables */
@@ -355,15 +368,22 @@ public class ControllerServlet extends HttpServlet
 	/* go to joke posting form */
 	private void goToJokePostForm(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		User user = userDAO.getUser(sessionUserId);
+		
 		/* determine form variables */
 		String formAction = new String("postJoke");
 		String formText = new String("Please insert your joke:");
 		String buttonText = new String("post");
+		String gender = user.getGender();
 		
 		/* fill the form values of the JokePost.jsp with the user info */
 		request.setAttribute("formAction", formAction);
 		request.setAttribute("formText", formText);
 		request.setAttribute("buttonText", buttonText);
+		request.setAttribute("gender", gender);
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("JokePost.jsp");
         dispatcher.forward(request, response);
@@ -372,14 +392,17 @@ public class ControllerServlet extends HttpServlet
 	/* insert a joke into Joke table */
 	private void postJoke(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		
 		/* get the joke information from the registration form */		
 		String title = request.getParameter("title");
 		String description = request.getParameter("description");
 		Date date = Date.valueOf(LocalDate.now());
-		int userId = 1; /********** should be changed to current session's user */
 		
 		/* create a user instance with the provided data and insert it into database */
-		Joke joke = new Joke(title, description, date, userId);
+		Joke joke = new Joke(title, description, date, sessionUserId);
 		jokeDAO.insertJoke(joke);
 
 		/* list the users in the browser */
@@ -389,15 +412,39 @@ public class ControllerServlet extends HttpServlet
 	/* list jokes */
 	private void listJokes(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
-		/* get the list of users from database */
-		List<Joke> jokeList = jokeDAO.getJokeList();
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		User user = userDAO.getUser(sessionUserId);
 		
-		/* show the list of users in userList value of Admin.jsp */
-		User user= new User();
+		/* get the list of users from database */
+		List<Joke> jokeList = jokeDAO.getUserJokes(sessionUserId);
+		if (jokeList.isEmpty())
+		{
+			jokeList = null;
+		}
+		
+		/* show a message on top of the table */
+		String message;
+		String color;
+		if (jokeList == null)
+		{
+			message = "You currently have no jokes, please post a joke!";
+			color = "red";
+		}
+		else
+		{
+			message = "List of all your jokes:";
+			color = "green";
+		}
+
+		/* show the list of user's jokes */
 		String gender = user.getGender();
-		request.setAttribute("user", user); /********** should be changed to current session's user */
+		request.setAttribute("user", user);
 		request.setAttribute("jokeList", jokeList);
-		request.setAttribute("gender", gender); /* change the profile picture based on gender */
+		request.setAttribute("gender", gender);
+		request.setAttribute("message", message);
+		request.setAttribute("color", color);
 		
 		/* refresh the page */
         RequestDispatcher dispatcher = request.getRequestDispatcher("UserAccount.jsp");
@@ -407,12 +454,16 @@ public class ControllerServlet extends HttpServlet
 	/* delete a joke */
 	private void deleteJoke(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException
 	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		
 		/* get the jokeId and its owner userId from the request */
 		int jokeId = Integer.parseInt(request.getParameter("jokeId"));
 		int jokeUserId = Integer.parseInt(request.getParameter("postUserId"));
 		
-		/* check if the user is the owner of the joke */
-		if (jokeUserId == 1) /********** should be changed to current session's user */
+		/* check if the session's user is the owner of the joke or it's the root user */
+		if (sessionUserId == jokeUserId || sessionUserId == 1)
 		{
 			jokeDAO.deleteJoke(jokeId);
 		}
@@ -424,12 +475,17 @@ public class ControllerServlet extends HttpServlet
 	/* go to joke form */
 	private void goToJokeEditForm(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		User user = userDAO.getUser(sessionUserId);
+		
 		/* get the jokeId and its owner userId from the request */
 		int jokeId = Integer.parseInt(request.getParameter("jokeId"));
 		int jokeUserId = Integer.parseInt(request.getParameter("postUserId"));
 		
 		/* check if the user is the owner of the joke */
-		if (jokeUserId == 1) /********** should be changed to current session's user */
+		if (sessionUserId == jokeUserId)
 		{
 			/* get the user information based on the userId */
 			Joke joke = jokeDAO.getJoke(jokeId);
@@ -438,12 +494,14 @@ public class ControllerServlet extends HttpServlet
 			String formAction = new String("updateJoke");
 			String formText = new String("Please modify your joke:");
 			String buttonText = new String("save");
+			String gender = user.getGender();
 			
 			/* fill the form values of the JokePost.jsp with the user info */
 			request.setAttribute("joke", joke);
 			request.setAttribute("formAction", formAction);
 			request.setAttribute("formText", formText);
 			request.setAttribute("buttonText", buttonText);
+			request.setAttribute("gender", gender);
 			
 			/* send the updated JokePost.jsp to the browser */
 	        RequestDispatcher dispatcher = request.getRequestDispatcher("JokePost.jsp");
@@ -459,6 +517,10 @@ public class ControllerServlet extends HttpServlet
 	/* update a joke in Joke table */
 	private void updateJoke(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		
 		/* get the joke information from the registration form */
 		int jokeId = Integer.parseInt(request.getParameter("jokeId"));
 		String title = request.getParameter("title");
@@ -470,7 +532,7 @@ public class ControllerServlet extends HttpServlet
 		Joke joke = new Joke(jokeId, title, description, date, userId);
 		
 		/* check if the user is the owner of the joke */
-		if (userId == 1) /********** should be changed to current session's user */
+		if (sessionUserId == userId)
 		{
 			jokeDAO.updateJoke(joke);
 		}

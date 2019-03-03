@@ -30,8 +30,8 @@
 		<table style="padding-bottom:50">
 			<tr>
 				<th width="300">
-					<img src="images/search.png" height="50px" width="50px">
 					<input type="search" size="30" id="mySearch" placeholder="find a joke ...">
+					<a href="searchJoke"><img src="images/searchJoke.png" title="search joke tags" height="50px" width="50px"></a>
 				</th>
 				<th width="300">
 					<a href="newJoke"><img src="images/newJoke.png" title="post a new joke" height="50px" width="50px"></a>
@@ -40,33 +40,36 @@
 		</table>
 	</div>
 	<div align="center">
-        <table border="1">
-        	<c:if test="${jokeList != null}">
+		<c:if test="${message != null && color != null}">
+	        <h1><font color="<c:out value='${color}'/>"><c:out value='${message}'/></font></h1>
+	    </c:if>
+		<c:if test="${jokeList != null}">
+	        <table border="1">
 	            <tr>
 	                <th width="20">ID</th>
 	                <th width="100">Title</th>
 	                <th width="500">Text</th>
 	                <th width="100">Date</th>
-	                <th width="100">Owner</th>
+	                <th width="100">OwnerId</th>
 	                <th width="200" colspan="2">Actions</th>
 	            </tr>
-            </c:if>
-            <c:forEach var="joke" items="${jokeList}">
-                <tr>
-                    <td align="center"><c:out value="${joke.jokeId}" /></td>
-                    <td align="center"><c:out value="${joke.jokeTitle}" /></td>
-                    <td align="center"><c:out value="${joke.jokeText}" /></td>
-                    <td align="center"><c:out value="${joke.jokePostDate}" /></td>
-                    <td align="center"><c:out value="${joke.postUserId}" /></td>
-                    <td align="center">
-                        <a href="modifyJoke?jokeId=<c:out value='${joke.jokeId}' />&postUserId=<c:out value='${joke.postUserId}' />"><img src="images/edit.png" height="30%" width="30%"></a>
-                    </td>
-                    <td align="center">
-                        <a href="deleteJoke?jokeId=<c:out value='${joke.jokeId}' />&postUserId=<c:out value='${joke.postUserId}' />"><img src="images/trash.png" height="30%" width="30%"></a>
-                    </td>
-                </tr>
-            </c:forEach>
-        </table>
+	            <c:forEach var="joke" items="${jokeList}">
+	                <tr>
+	                    <td align="center"><c:out value="${joke.jokeId}" /></td>
+	                    <td align="center"><c:out value="${joke.jokeTitle}" /></td>
+	                    <td align="center"><c:out value="${joke.jokeText}" /></td>
+	                    <td align="center"><c:out value="${joke.jokePostDate}" /></td>
+	                    <td align="center"><c:out value="${joke.postUserId}" /></td>
+	                    <td align="center">
+	                        <a href="modifyJoke?jokeId=<c:out value='${joke.jokeId}' />&postUserId=<c:out value='${joke.postUserId}' />"><img src="images/edit.png" height="30%" width="30%"></a>
+	                    </td>
+	                    <td align="center">
+	                        <a href="deleteJoke?jokeId=<c:out value='${joke.jokeId}' />&postUserId=<c:out value='${joke.postUserId}' />"><img src="images/trash.png" height="30%" width="30%"></a>
+	                    </td>
+	                </tr>
+	            </c:forEach>
+	        </table>
+         </c:if>
     </div>
 </body>
 </html>

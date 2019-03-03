@@ -95,17 +95,17 @@ public class UserDAO
 	{
 		/* insert the default users */
 		List<User> userList = new ArrayList<User>();
-		userList.add(new User("root", "pass1234", null, null, null, null, 0));
-		userList.add(new User("John", "pass1234", null, null, null, null, 0));
-		userList.add(new User("Shahram", "pass1234", null, null, null, null, 0));
-		userList.add(new User("Gwen", "pass1234", null, null, null, null, 0));
-		userList.add(new User("Krishna", "pass1234", null, null, null, null, 0));
-		userList.add(new User("Elvis", "pass1234", null, null, null, null, 0));
-		userList.add(new User("Shiyong", "pass1234", null, null, null, null, 0));
-		userList.add(new User("Julian", "pass1234", null, null, null, null, 0));
-		userList.add(new User("Mike", "pass1234", null, null, null, null, 0));
-		userList.add(new User("Reza", "pass1234", null, null, null, null, 0));
-		userList.add(new User("Jesse", "pass1234", null, null, null, null, 0));
+		userList.add(new User("root", "pass1234", "root", null, "root@wayne.edu", null, 0));
+		userList.add(new User("john1234", "pass1234", "John", null, "John123@wayne.edu", "Male", 0));
+		userList.add(new User("shahram1234", "pass1234", "Shahram", null, "Shahram123@wayne.edu", "Male", 0));
+		userList.add(new User("gwen1234", "pass1234", "Gwen", null, "Gwen123@wayne.edu", "Female", 0));
+		userList.add(new User("runni1234", "pass1234", "Runni", null, "Runni123@wayne.edu", "Female", 0));
+		userList.add(new User("elvis1234", "pass1234", "Elvis", null, "Elvis123@wayne.edu", "Male", 0));
+		userList.add(new User("shiyong1234", "pass1234", "Shiyong", null, "Shiyong123@wayne.edu", "Male", 0));
+		userList.add(new User("luchia1234", "pass1234", "Luchia", null, "Luchia123@wayne.edu", "Female", 0));
+		userList.add(new User("mike1234", "pass1234", "Mike", null, "Mike123@wayne.edu", "Male", 0));
+		userList.add(new User("sarah1234", "pass1234", "Sarah", null, "Sarah123@wayne.edu", "Female", 0));
+		userList.add(new User("jennifer1234", "pass1234", "Jennifer", null, "Jennifer123@wayne.edu", "Female", 0));
 		insertUser(userList);
 	}
 	

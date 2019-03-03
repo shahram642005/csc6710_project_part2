@@ -224,9 +224,9 @@ public class JokeDAO
 	}
 	
 	/* get a user's joked from Joke table */
-	public Joke getUserJokes(int userId) throws SQLException
+	public List<Joke> getUserJokes(int userId) throws SQLException
 	{
-		Joke joke = null;
+		List<Joke> jokeList = new ArrayList<Joke>();
 		String sqlGet = "SELECT * FROM Joke WHERE postUserId = ?";
 		connect();
 		
@@ -239,16 +239,17 @@ public class JokeDAO
 			int jokeId = result.getInt("jokeId");
 			String title = result.getString("jokeTitle");
 			String text = result.getString("jokeText");
-			Date date = result.getDate("jokeDate");
+			Date date = result.getDate("jokePostDate");
 			
-			joke = new Joke(jokeId, title, text, date, userId);
+			Joke joke = new Joke(jokeId, title, text, date, userId);
+			jokeList.add(joke);
 		}
 		
 		result.close();
 		preparedStatement.close();
 		disconnect();
 		
-		return joke;
+		return jokeList;
 	}
 	
 	/* get list of all jokes from joke table */

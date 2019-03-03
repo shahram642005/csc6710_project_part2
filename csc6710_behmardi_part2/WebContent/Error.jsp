@@ -8,8 +8,8 @@
 </head>
 <body>
     <center>
-        <h1>Error!</h1>
-        <h2><%=exception.getMessage() %><br/> </h2>
+        <h1><font color="red">Error!</font></h1>
+        <h2><font color="red"><%=exception.getMessage() %></font></h2>
     </center> 
 </body>
 </html>
