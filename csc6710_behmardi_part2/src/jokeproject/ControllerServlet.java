@@ -63,6 +63,9 @@ public class ControllerServlet extends HttpServlet
             case "/loginUser":
             	loginUser(request, response);
             	break;
+            case "/logoutUser":
+            	logoutUser(request, response);
+            	break;
             case "/registerUser":
                 registerUser(request, response);
                 break;
@@ -75,6 +78,12 @@ public class ControllerServlet extends HttpServlet
             case "/modifyUser":
                 goToUserEditForm(request, response);
                 break;
+            case "/banUser":
+                //banUser(request, response);
+                break;
+            case "/unbanUser":
+            	//unbanUser(request, response);
+                break;
             case "/updateUser":
                 updateUser(request, response);
                 break;
@@ -82,7 +91,7 @@ public class ControllerServlet extends HttpServlet
             	goToJokePostForm(request, response);
                 break;
             case "/reviewJoke":
-            	//reviewUser(request, response);
+            	//reviewJoke(request, response);
             	break;
             case "/postJoke":
                 postJoke(request, response);
@@ -132,9 +141,11 @@ public class ControllerServlet extends HttpServlet
 		jokeReviewDAO.initJokereviewTable();
 		jokeTagDAO.initJokeTagTable();
 		
-		/* show the text informing the tables are initialized */
-		String showInitMsg = "";
-		request.setAttribute("showInitMsg", showInitMsg);
+		/* show a message indicating successful logout */
+		String message = "All tables are successfully initialized!";
+		String color = "green";
+		request.setAttribute("message", message);
+		request.setAttribute("color", color);
 		
 		if (isRootUser.equals("TRUE"))
 		{
@@ -197,9 +208,12 @@ public class ControllerServlet extends HttpServlet
 		/* check the credential of the user */
 		if (userName == null || password == null || user == null || !password.equals(user.password)) /* unsuccessful login */
 		{
-			String showErrMsg = "";
+			/* show a message indicating successful logout */
+			String message = "The user name or password is not correct, please try again!";
+			String color = "red";
+			request.setAttribute("message", message);
+			request.setAttribute("color", color);
 			
-			request.setAttribute("showErrMsg", showErrMsg);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
 			dispatcher.forward(request, response);
 		}
@@ -216,6 +230,19 @@ public class ControllerServlet extends HttpServlet
 				response.sendRedirect("listJokes");
 			}
 		}		
+	}
+	
+	/* check if user is in database and it's user name and password match the User table */
+	private void logoutUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
+	{
+		/* show a message indicating successful logout */
+		String message = "You are successfully logged out!";
+		String color = "green";
+		request.setAttribute("message", message);
+		request.setAttribute("color", color);
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
+		dispatcher.forward(request, response);		
 	}
 	
 	/* list users */
@@ -335,8 +362,10 @@ public class ControllerServlet extends HttpServlet
 		
 		/* show the list of users in userList value of Admin.jsp */
 		User user= new User();
+		String gender = user.getGender();
 		request.setAttribute("user", user); /********** should be changed to current session's user */
 		request.setAttribute("jokeList", jokeList);
+		request.setAttribute("gender", gender); /* change the profile picture based on gender */
 		
 		/* refresh the page */
         RequestDispatcher dispatcher = request.getRequestDispatcher("UserAccount.jsp");
