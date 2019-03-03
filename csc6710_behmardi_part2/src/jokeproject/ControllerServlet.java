@@ -164,6 +164,16 @@ public class ControllerServlet extends HttpServlet
 	/* go to registration form */
 	private void goToRegisterForm(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
+		/* determine form variables */
+		String formAction = new String("registerUser");
+		String formText = new String("Please insert your account information:");
+		String buttonText = new String("register");
+		
+		/* fill the form values of the Resigtration.jsp with the user info */
+		request.setAttribute("formAction", formAction);
+		request.setAttribute("formText", formText);
+		request.setAttribute("buttonText", buttonText);
+		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("Registration.jsp");
         dispatcher.forward(request, response);
 	}
@@ -280,24 +290,36 @@ public class ControllerServlet extends HttpServlet
 	{
 		/* get the userId of the user */
 		int userId = Integer.parseInt(request.getParameter("userId"));
+		User user = new User();
 		
-		if (userId != 1) /* if it's not the root */
+		if (userId != 0) /* if it's the root user trying to modify */
 		{
 			/* get the user information based on the userId */
-			User user = userDAO.getUser(userId);
-			
-			/* fill the form values of the Resigtration.jsp with the user info */
-			request.setAttribute("user", user);
-			
-			/* send the updated Registration.jsp to the browser */
-	        RequestDispatcher dispatcher = request.getRequestDispatcher("Registration.jsp");
-	        dispatcher.forward(request, response);
+			user = userDAO.getUser(userId);
 		}
-		else /* if it's the root user, do nothing */
+		else /* the current logged in user is trying to modify its profile */
 		{
-			/* list the users in the browser */
-			response.sendRedirect("listUsers");
+			/* get current session's userId */
+			userId = 2; /********** should be changed to current session's user */
+			
+			/* get the user information based on the userId */
+			user = userDAO.getUser(userId);
 		}
+			
+		/* determine form variables */
+		String formAction = new String("updateUser");
+		String formText = new String("Please modify your account information:");
+		String buttonText = new String("save");
+		
+		/* fill the form values of the Resigtration.jsp with the user info */
+		request.setAttribute("user", user);
+		request.setAttribute("formAction", formAction);
+		request.setAttribute("formText", formText);
+		request.setAttribute("buttonText", buttonText);
+		
+		/* send the updated Registration.jsp to the browser */
+        RequestDispatcher dispatcher = request.getRequestDispatcher("Registration.jsp");
+        dispatcher.forward(request, response);
 	}
 	
 	/* update user information */
@@ -333,6 +355,16 @@ public class ControllerServlet extends HttpServlet
 	/* go to joke posting form */
 	private void goToJokePostForm(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
+		/* determine form variables */
+		String formAction = new String("postJoke");
+		String formText = new String("Please insert your joke:");
+		String buttonText = new String("post");
+		
+		/* fill the form values of the JokePost.jsp with the user info */
+		request.setAttribute("formAction", formAction);
+		request.setAttribute("formText", formText);
+		request.setAttribute("buttonText", buttonText);
+		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("JokePost.jsp");
         dispatcher.forward(request, response);
 	}
@@ -402,10 +434,18 @@ public class ControllerServlet extends HttpServlet
 			/* get the user information based on the userId */
 			Joke joke = jokeDAO.getJoke(jokeId);
 			
-			/* fill the form values of the the joke info */
-			request.setAttribute("joke", joke);
+			/* determine form variables */
+			String formAction = new String("updateJoke");
+			String formText = new String("Please modify your joke:");
+			String buttonText = new String("save");
 			
-			/* send the updated Registration.jsp to the browser */
+			/* fill the form values of the JokePost.jsp with the user info */
+			request.setAttribute("joke", joke);
+			request.setAttribute("formAction", formAction);
+			request.setAttribute("formText", formText);
+			request.setAttribute("buttonText", buttonText);
+			
+			/* send the updated JokePost.jsp to the browser */
 	        RequestDispatcher dispatcher = request.getRequestDispatcher("JokePost.jsp");
 	        dispatcher.forward(request, response);
 		}

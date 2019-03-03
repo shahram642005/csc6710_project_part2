@@ -6,43 +6,35 @@
 <title>Login</title>
 </head>
 <body>
-    <h1 style="text-align:center">Welcome to Jokes website!</h1>
+    <h1 style="text-align:center">Please login or register!</h1>
+    <div align="center">
+	    <table style="padding-bottom:50">
+	    <col width="600">
+		<col width="600">
+		<col width="600">
+		<col width="600">
+		<col width="600">
+	   		<tr>
+	    		<th align="center"><a href="initTables?rootUser=FALSE"><img src="images/reset.png" title="initialize database" height="100px" width="100px"></a></th>
+	        	<th align="center"> <a href="newUser"><img src="images/register.png" title="register user" height="100px" width="100px"></a></th>
+	   		</tr>
+	    </table>
+    </div>
     <div align="center">
         <form action="loginUser" method="post">
-        <table border="1">
-            <caption>
-                <h2>Please login or register!</h2>
-            </caption>            
-            <tr>
-                <th>UserName </th>
-                <td>
-                    <input type="text" placeholder="user name" name="userName" size="45"
-                            value="<c:out value='${user.userName}' />"
-                    />
-                </td>
-            </tr>
-            <tr>
-                <th>Password </th>
-                <td>
-                    <input type="text" placeholder="password" name="password" size="45"
-                            value="<c:out value='${user.password}' />"
-                    />
-                </td>
-            </tr>
-        </table>
-        <table>
-            <tr>
-            	<td align="center">
-                    <input type="submit" value="login" />
-                </td>
-                <td align="center">
-                    <a href="newUser">register now!</a>
-                </td>
-                <td align="center">
-                    <a href="initTables?rootUser=FALSE">Initialize Database!</a>
-                </td>
-            </tr>
-        </table>
+        	<table>
+        		<tr><td>User Name:</td></tr>
+        		<tr>
+        			<td><input type="text" placeholder="user name" name="userName" size="50" autofocus value="<c:out value='${user.userName}'/>"/></td>
+        		</tr>
+        		<tr><td>Password:</td></tr>
+        		<tr>
+        			<td><input type="text" placeholder="password" name="password" size="50" value="<c:out value='${user.password}'/>"/></td>
+        		</tr>
+        		<tr>
+        			<td><input type="submit" value="login" /></td>
+        		</tr>
+        	</table>
         </form>
     </div>
     <div>
