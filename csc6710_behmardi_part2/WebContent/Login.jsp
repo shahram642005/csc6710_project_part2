@@ -29,7 +29,7 @@
         		</tr>
         		<tr><td>Password:</td></tr>
         		<tr>
-        			<td><input type="text" placeholder="password" name="password" size="50" value="<c:out value='${user.password}'/>"/></td>
+        			<td><input type="password" placeholder="password" name="password" size="50" value="<c:out value='${user.password}'/>"/></td>
         		</tr>
         		<tr>
         			<td><input type="submit" value="login" /></td>
