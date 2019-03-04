@@ -15,7 +15,7 @@
 		<col width="600">
 		<col width="600">
 	   		<tr>
-	    		<th align="center"><a href="initTables?rootUser=FALSE"><img src="images/reset.png" title="initialize database" height="100px" width="100px"></a></th>
+	    		<th align="center"><a href="initTables?rootUser=FALSE"><img src="images/reset.png" title="initialize database" height="70px" width="70px"></a></th>
 	        	<th align="center"> <a href="newUser"><img src="images/register.png" title="register user" height="100px" width="100px"></a></th>
 	   		</tr>
 	    </table>
