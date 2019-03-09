@@ -115,19 +115,18 @@ public class JokeDAO
 		Joke joke = new Joke();
 		boolean status = false;
 		
-		String sqlInsert = "INSERT INTO Joke (jokeId, jokeTitle, jokeText, jokePostDate, postUserId) " +
-							"VALUES (?, ?, ?, ?, ?)";
+		String sqlInsert = "INSERT INTO Joke (jokeTitle, jokeText, jokePostDate, postUserId) " +
+							"VALUES (?, ?, ?, ?)";
 		connect();
 		for (int i = 0; i < jokeList.size(); i++)
 		{
 			joke = jokeList.get(i);
 			
 			PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
-			preparedStatement.setInt(1, joke.getjokeId());
-			preparedStatement.setString(2, joke.getjokeTitle());
-			preparedStatement.setString(3, joke.getjokeText());
-			preparedStatement.setDate(4, joke.getjokePostDate());
-			preparedStatement.setInt(5, joke.getpostUserId());
+			preparedStatement.setString(1, joke.getjokeTitle());
+			preparedStatement.setString(2, joke.getjokeText());
+			preparedStatement.setDate(3, joke.getjokePostDate());
+			preparedStatement.setInt(4, joke.getpostUserId());
 			
 			status &= preparedStatement.executeUpdate() > 0;
 			preparedStatement.close();
@@ -137,27 +136,33 @@ public class JokeDAO
 		return status;
 	}
 	
-	/* insert a joke to Joke table */
-	public boolean insertJoke(Joke joke) throws SQLException
+	/* insert a joke to Joke table and get the jokeId in return */
+	public int insertJoke(Joke joke) throws SQLException
 	{
-		String sqlInsert = "INSERT INTO Joke (jokeId, jokeTitle, jokeText, jokePostDate, postUserId) " +
-							"VALUES (?, ?, ?, ?, ?)";
+		int jokeId = 0;
+		String sqlInsert = "INSERT INTO Joke (jokeTitle, jokeText, jokePostDate, postUserId) " +
+							"VALUES (?, ?, ?, ?)";
 		connect();
-		PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
-		preparedStatement.setInt(1, joke.getjokeId());
-		preparedStatement.setString(2, joke.getjokeTitle());
-		preparedStatement.setString(3, joke.getjokeText());
-		preparedStatement.setDate(4, joke.getjokePostDate());
-		preparedStatement.setInt(5, joke.getpostUserId());
+		PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS);
+		preparedStatement.setString(1, joke.getjokeTitle());
+		preparedStatement.setString(2, joke.getjokeText());
+		preparedStatement.setDate(3, joke.getjokePostDate());
+		preparedStatement.setInt(4, joke.getpostUserId());
 		
-		boolean status = preparedStatement.executeUpdate() > 0;
+		preparedStatement.executeUpdate();
+		
+		/* get the auto-incremented jokeId */
+		ResultSet result = preparedStatement.getGeneratedKeys();
+		if (result.next())
+		{
+			jokeId = result.getInt(1);
+		}
+		
 		preparedStatement.close();
 		disconnect();
 		
-		return status;
+		return jokeId;
 	}
-	
-
 	
 	/* update a joke information in Joke table */
 	public boolean updateJoke(Joke joke) throws SQLException

@@ -181,6 +181,7 @@ public class ControllerServlet extends HttpServlet
 		String lastName = request.getParameter("lastName");
 		String email = request.getParameter("email");
 		String gender = request.getParameter("gender");
+		System.out.println("gender is " + gender);
 		String ageStr = request.getParameter("age");
 		int age = 0;
 		if (!ageStr.isEmpty()) /* make sure ageStr is not empty */
@@ -367,6 +368,7 @@ public class ControllerServlet extends HttpServlet
 			String lastName = request.getParameter("lastName");
 			String email = request.getParameter("email");
 			String gender = request.getParameter("gender");
+			System.out.println("gender is " + gender);
 			String ageStr = request.getParameter("age");
 			int age = 0;
 			if (!ageStr.isEmpty()) /* make sure ageStr is not empty */
@@ -457,11 +459,19 @@ public class ControllerServlet extends HttpServlet
 		/* get the joke information from the registration form */		
 		String title = request.getParameter("title");
 		String description = request.getParameter("description");
+		String tags = request.getParameter("tags");
 		Date date = Date.valueOf(LocalDate.now());
 		
 		/* create a user instance with the provided data and insert it into database */
 		Joke joke = new Joke(title, description, date, sessionUserId);
-		jokeDAO.insertJoke(joke);
+		int jokeId = jokeDAO.insertJoke(joke);
+		
+		/* split the comma separated tags and insert them into database */
+		String tag[] = tags.split("\\s*,\\s*");
+		for (int i = 0; i < tag.length; i++)
+		{
+			jokeTagDAO.insertJokeTag(new JokeTag(jokeId, tag[i]));
+		}
 
 		/* list the jokes in the browser */
 		listJokes(request, response);

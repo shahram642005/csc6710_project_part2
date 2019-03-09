@@ -50,20 +50,20 @@
 	            	<c:choose>
 						<c:when test="${user.gender == 'Male'}">
 			                <td>
-			                	<input type="radio" name="gender" value="<c:out value='${user.gender}' />" checked>Male
-			                	<input type="radio" name="gender" value="<c:out value='${user.gender}' />">Female<br>
+			                	<input type="radio" name="gender" value="Male" checked>Male
+			                	<input type="radio" name="gender" value="Female">Female<br>
 			                </td>
 		                </c:when>
 		                <c:when test="${user.gender == 'Female'}">
 			                <td>
-			                	<input type="radio" name="gender" value="<c:out value='${user.gender}' />">Male
-			                	<input type="radio" name="gender" value="<c:out value='${user.gender}' />" checked>Female<br>
+			                	<input type="radio" name="gender" value="Male">Male
+			                	<input type="radio" name="gender" value="Female" checked>Female<br>
 			                </td>
 		                </c:when>
 		                <c:otherwise>
 			                <td>
-			                	<input type="radio" name="gender" value="<c:out value='${user.gender}' />">Male
-			                	<input type="radio" name="gender" value="<c:out value='${user.gender}' />">Female<br>
+			                	<input type="radio" name="gender" value="Male">Male
+			                	<input type="radio" name="gender" value="Female">Female<br>
 			                </td>
 		                </c:otherwise>
 	                </c:choose>

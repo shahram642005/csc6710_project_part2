@@ -20,7 +20,9 @@
 	<col width="600">
 	<col width="600">
 	<col width="600">
-		<tr>
+	<col width="600">
+	<col width="600">
+		<tr >
 			<c:choose>
 				<c:when test="${userId == 1}">
 					<th align="left"><a href="modifyUser?userId=1"><img src="images/admin.png" height="100px" width="100px"></a></th>
@@ -35,26 +37,26 @@
 					<th align="left"><a href="modifyUser?userId=0"><img src="images/femaleProfile.png" height="100px" width="100px"></a></th>
 				</c:otherwise>
 			</c:choose>
-			<th align="center"><h1>Welcome<c:out value=" ${user.userName}"/>!<img src="images/welcome.png" height="70px" width="70px"></h1></th>
+			<th></th>
+			<th align="center"><h2>Welcome<c:out value=" ${user.userName}"/>!<img src="images/welcome.png" height="70px" width="70px"></h2></th>
+			<th></th>
 			<th align="right"><a href="logoutUser"><img src="images/logout.png" title="log out" height="70px" width="70px"></a></th>
 		</tr>
+		<tr>
+			<th></th>
+			<th>
+				<input type="search" size="30" id="mySearch" placeholder="find a joke ...">
+				<a href="searchJoke"><img src="images/searchJoke.png" title="search joke tags" height="50px" width="50px"></a>
+			</th>
+			<th>
+				<a href="newJoke"><img src="images/newJoke.png" title="post a new joke" height="50px" width="50px"></a>
+			</th>
+			<c:if test="${userId == 1}">
+				<th align="center"><a href="listUsers"><img src="images/list.png" title="list all users" height="50px" width="50px"></a></th>
+			</c:if>
+			<th></th>
+		</tr>
 	</table>
-	<div align="center">
-		<table style="padding-bottom:50">
-			<tr>
-				<th width="300">
-					<input type="search" size="30" id="mySearch" placeholder="find a joke ...">
-					<a href="searchJoke"><img src="images/searchJoke.png" title="search joke tags" height="50px" width="50px"></a>
-				</th>
-				<th width="300">
-					<a href="newJoke"><img src="images/newJoke.png" title="post a new joke" height="50px" width="50px"></a>
-				</th>
-				<c:if test="${userId == 1}">
-					<th align="center"><a href="listUsers"><img src="images/list.png" title="list all users" height="50px" width="50px"></a></th>
-				</c:if>
-			</tr>
-		</table>
-	</div>
 	<div>
 		<h2 style="text-align:center">
 		    <c:if test="${message != null && color != null}">

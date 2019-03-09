@@ -58,8 +58,12 @@
 	            <tr>
 	                <td><input type="text" name="description" size="50" placeholder="description of your joke" value="<c:out value='${joke.jokeText}' />" /></td>
 	            </tr>
+	            <tr><td>Tags:</td></tr>
 	            <tr>
-		            <td rowspan="5" align="center"><input type="submit" value="<c:out value='${buttonText}' />" /></td>
+	                <td><input type="text" name="tags" size="50" autofocus placeholder="tag1, tag2, ..." value="<c:out value='${jokeTag.jokeTagWord}' />"/></td>
+	            </tr>
+	            <tr>
+		            <td ><input type="submit" value="<c:out value='${buttonText}' />" /></td>
 	            </tr>
 	        </table>
         </form>

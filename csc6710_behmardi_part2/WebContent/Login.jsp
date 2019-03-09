@@ -6,20 +6,28 @@
 <title>Login</title>
 </head>
 <body>
-    <h1 style="text-align:center">Please login or register!</h1>
-    <div align="center">
-	    <table style="padding-bottom:50">
-	    <col width="600">
-		<col width="600">
-		<col width="600">
-		<col width="600">
-		<col width="600">
-	   		<tr>
-	    		<th align="center"><a href="initTables"><img src="images/reset.png" title="initialize database" height="70px" width="70px"></a></th>
-	        	<th align="center"> <a href="newUser"><img src="images/register.png" title="register user" height="100px" width="100px"></a></th>
-	   		</tr>
-	    </table>
-    </div>
+	<table style="padding-bottom:50">
+	<col width="600">
+	<col width="600">
+	<col width="600">
+	<col width="600">
+	<col width="600">
+		<tr>
+		<tr>
+			<th align="left"><a href="modifyUser?userId=0"><img src="images/nogenderProfile.png" height="100px" width="100px"></a></th>
+			<th></th>
+			<th align="center"><h2>Please login or register!</h2></th>
+			<th></th>
+			<th></th>
+		</tr>
+		<tr>
+			<th></th>
+			<th align="right"><a href="initTables"><img src="images/reset.png" title="initialize database" height="75px" width="75px"></a></th>
+			<th></th>
+        	<th align="left"><a href="newUser"><img src="images/register.png" title="register user" height="100px" width="100px"></a></th>
+        	<th></th>
+		</tr>
+	</table>
     <div align="center">
         <form action="loginUser" method="post">
         	<table>
