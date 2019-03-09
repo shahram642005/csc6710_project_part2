@@ -6,12 +6,25 @@
 	<title>Post Joke</title>
 </head>
 <body>
+<%
+	if(session.getAttribute("userId") == null)
+	{
+		response.sendRedirect("Login.jsp");
+	}
+	else
+	{
+		int userId = Integer.parseInt(session.getAttribute("userId").toString());
+	}
+%>
 	<table style="padding-bottom:50">
 	<col width="600">
 	<col width="600">
 	<col width="600">
 		<tr>
 			<c:choose>
+			<c:when test="${userId == 1}">
+					<th align="left"><a href="modifyUser?userId=1"><img src="images/admin.png" height="100px" width="100px"></a></th>
+				</c:when>
 				<c:when test="${gender == null}">
 					<th align="left"><a href="modifyUser?userId=0"><img src="images/nogenderProfile.png" height="100px" width="100px"></a></th>
 				</c:when>

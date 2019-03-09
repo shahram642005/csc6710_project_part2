@@ -15,7 +15,7 @@
 		<col width="600">
 		<col width="600">
 	   		<tr>
-	    		<th align="center"><a href="initTables?rootUser=FALSE"><img src="images/reset.png" title="initialize database" height="70px" width="70px"></a></th>
+	    		<th align="center"><a href="initTables"><img src="images/reset.png" title="initialize database" height="70px" width="70px"></a></th>
 	        	<th align="center"> <a href="newUser"><img src="images/register.png" title="register user" height="100px" width="100px"></a></th>
 	   		</tr>
 	    </table>
@@ -38,11 +38,11 @@
         </form>
     </div>
     <div>
-	<h2 style="text-align:center">
-	    <c:if test="${message != null && color != null}">
-	        <font color="<c:out value='${color}'/>"><c:out value='${message}'/></font>
-	    </c:if>
-	</h2>
+		<h2 style="text-align:center">
+		    <c:if test="${message != null && color != null}">
+		        <font color="<c:out value='${color}'/>"><c:out value='${message}'/></font>
+		    </c:if>
+		</h2>
     </div>
 </body>
 </html>

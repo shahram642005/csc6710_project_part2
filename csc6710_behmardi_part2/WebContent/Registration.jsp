@@ -41,13 +41,32 @@
 	            <tr>
 	                <td><input type="email" name="email" size="50" placeholder="userId@email.com" value="<c:out value='${user.email}' />"/></td>
 	            </tr>
-	            <tr><td>Gender:</td></tr>
-	            <tr>
-	                <td><input type="text" name="gender" size="50" placeholder="e.g. Male, Female" value="<c:out value='${user.gender}' />"/></td>
-	            </tr>
 	            <tr><td>Age:</td></tr>
 	            <tr>
 	                <td><input type="number" name="age" size="50" placeholder="0-120" value="<c:out value='${user.age}' />"/></td>
+	            </tr>
+	            <tr><td>Gender:</td></tr>
+	            <tr>
+	            	<c:choose>
+						<c:when test="${user.gender == 'Male'}">
+			                <td>
+			                	<input type="radio" name="gender" value="<c:out value='${user.gender}' />" checked>Male
+			                	<input type="radio" name="gender" value="<c:out value='${user.gender}' />">Female<br>
+			                </td>
+		                </c:when>
+		                <c:when test="${user.gender == 'Female'}">
+			                <td>
+			                	<input type="radio" name="gender" value="<c:out value='${user.gender}' />">Male
+			                	<input type="radio" name="gender" value="<c:out value='${user.gender}' />" checked>Female<br>
+			                </td>
+		                </c:when>
+		                <c:otherwise>
+			                <td>
+			                	<input type="radio" name="gender" value="<c:out value='${user.gender}' />">Male
+			                	<input type="radio" name="gender" value="<c:out value='${user.gender}' />">Female<br>
+			                </td>
+		                </c:otherwise>
+	                </c:choose>
 	            </tr>
 	            <tr>
 	                <td align="center">
@@ -57,5 +76,12 @@
 	        </table>
         </form>
 	</div>
+	<div>
+		<h2 style="text-align:center">
+		    <c:if test="${message != null && color != null}">
+		        <font color="<c:out value='${color}'/>"><c:out value='${message}'/></font>
+		    </c:if>
+		</h2>
+    </div>
 </body>
 </html>

@@ -125,9 +125,6 @@ public class ControllerServlet extends HttpServlet
 	/* insert a user into User table */
 	private void initializeDatabase(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
-		/* get the rootUser parameter value */
-		String isRootUser = request.getParameter("rootUser");
-		
 		/* create all the database tables and populate them with tuples */
 		jokeTagDAO.dropJokeTagTable();
 		jokeReviewDAO.dropJokeReviewTable();
@@ -151,18 +148,9 @@ public class ControllerServlet extends HttpServlet
 		request.setAttribute("message", message);
 		request.setAttribute("color", color);
 		
-		if (isRootUser.equals("TRUE"))
-		{
-			/* refresh page */
-			RequestDispatcher dispatcher = request.getRequestDispatcher("Admin.jsp");
-			dispatcher.forward(request, response);
-		}
-		else
-		{
-			/* go to login page */
-			RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
-			dispatcher.forward(request, response);
-		}
+		/* go to login page */
+		RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
+		dispatcher.forward(request, response);
 	}
 	
 	/* go to registration form */
@@ -188,6 +176,7 @@ public class ControllerServlet extends HttpServlet
 		/* get the user information from the registration form */
 		String userName = request.getParameter("userName");
 		String password = request.getParameter("password");
+		String confirmPassword = request.getParameter("confirmPassword");
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
 		String email = request.getParameter("email");
@@ -201,11 +190,40 @@ public class ControllerServlet extends HttpServlet
 		
 		/* create a user instance with the provided data and insert it into database */
 		User user = new User(userName, password, firstName, lastName, email, gender, age);
-		userDAO.insertUser(user);
-
-		/* go to the login page */
-		RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
-		dispatcher.forward(request, response);
+		
+		if (!password.isEmpty() && password.equals(confirmPassword)) /* successful match between password and its confirmation */
+		{
+			/* insert the user to database */
+			userDAO.insertUser(user);
+	
+			/* go to the login page */
+			RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
+			dispatcher.forward(request, response);
+		}
+		else
+		{
+			/* show a message indicating successful logout */
+			String message = "Password mismatch!";
+			String color = "red";
+			request.setAttribute("message", message);
+			request.setAttribute("color", color);
+			
+			/* determine form variables */
+			user.password = "";
+			request.setAttribute("user", user);
+			String formAction = new String("registerUser");
+			String formText = new String("Please insert your account information:");
+			String buttonText = new String("register");
+			
+			/* fill the form values of the Resigtration.jsp with the user info */
+			request.setAttribute("formAction", formAction);
+			request.setAttribute("formText", formText);
+			request.setAttribute("buttonText", buttonText);
+			
+			/* go to the registration page */
+			RequestDispatcher dispatcher = request.getRequestDispatcher("Registration.jsp");
+			dispatcher.forward(request, response);
+		}
 	}
 	
 	/* check if user is in database and it's user name and password match the User table */
@@ -237,16 +255,8 @@ public class ControllerServlet extends HttpServlet
 			HttpSession session = request.getSession();
 			session.setAttribute("userId", user.getUserId());
 			
-			if (userName.equals("root"))	/* if it's the root user */
-			{
-				RequestDispatcher dispatcher = request.getRequestDispatcher("Admin.jsp");
-				dispatcher.forward(request, response);
-			}
-			else /* if it's not a root user */
-			{
-				/* go to the UserAccount in the browser */
-				response.sendRedirect("listJokes");
-			}
+			/* go to the UserAccount in the browser */
+			listJokes(request, response);
 		}		
 	}
 	
@@ -255,7 +265,8 @@ public class ControllerServlet extends HttpServlet
 	{
 		/* remove userId from session */
 		HttpSession session = request.getSession();
-		session.setAttribute("userId", null);
+		session.removeAttribute("userId");
+		session.invalidate();
 		
 		/* show a message indicating successful logout */
 		String message = "You are successfully logged out!";
@@ -273,16 +284,16 @@ public class ControllerServlet extends HttpServlet
 		/* get the list of users from database */
 		List<User> userList = userDAO.getUserList();
 		
-		/* show the list of users in userList value of Admin.jsp */
+		/* show the list of users to root user */
 		request.setAttribute("userList", userList);
 		
 		/* refresh the page */
-        RequestDispatcher dispatcher = request.getRequestDispatcher("Admin.jsp");
+        RequestDispatcher dispatcher = request.getRequestDispatcher("UserAccount.jsp");
         dispatcher.forward(request, response);
 	}
 	
 	/* delete a user */
-	private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException
+	private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
 		/* get the userId from the request */
 		int userId = Integer.parseInt(request.getParameter("userId"));
@@ -294,7 +305,7 @@ public class ControllerServlet extends HttpServlet
 		}
 		
 		/* list the users in the browser */
-		response.sendRedirect("listUsers");
+		listUsers(request, response);
 	}
 	
 	/* go to User edit form */
@@ -308,7 +319,7 @@ public class ControllerServlet extends HttpServlet
 		int userId = Integer.parseInt(request.getParameter("userId"));
 		User user = new User();
 		
-		if (userId != 0) /* if it's the root user trying to modify */
+		if (sessionUserId == 1) /* if it's the root user trying to modify */
 		{
 			/* get the user information based on the userId */
 			user = userDAO.getUser(userId);
@@ -326,6 +337,7 @@ public class ControllerServlet extends HttpServlet
 		
 		/* fill the form values of the Resigtration.jsp with the user info */
 		request.setAttribute("user", user);
+		request.setAttribute("confirmPassword", user.getPassword());
 		request.setAttribute("formAction", formAction);
 		request.setAttribute("formText", formText);
 		request.setAttribute("buttonText", buttonText);
@@ -338,13 +350,19 @@ public class ControllerServlet extends HttpServlet
 	/* update user information */
 	private void updateUser(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		
 		/* get the userId of the user */
 		int userId = Integer.parseInt(request.getParameter("userId"));
 		
-		if (userId != 1) /* if it's not the root */
+		/* if it's the current user trying to edit his profile or it's the root user */
+		if (sessionUserId == userId || sessionUserId == 1)
 		{
 			String userName = request.getParameter("userName");
 			String password = request.getParameter("password");
+			String confirmPassword = request.getParameter("confirmPassword");
 			String firstName = request.getParameter("firstName");
 			String lastName = request.getParameter("lastName");
 			String email = request.getParameter("email");
@@ -357,12 +375,52 @@ public class ControllerServlet extends HttpServlet
 			}
 			User user = new User(userId, userName, password, firstName, lastName, email, gender, age);
 			
-			/* update the user information in the database */
-			userDAO.updateUser(user);
+			if (!password.isEmpty() && password.equals(confirmPassword)) /* successful match between password and its confirmation */
+			{
+				/* update the user information in the database */
+				userDAO.updateUser(user);
+				
+				if (sessionUserId == 1) /* if it's the root user */
+				{
+					/* list the users in the browser */
+					listUsers(request, response);
+				}
+				else
+				{
+					listJokes(request, response);
+				}				
+			}
+			else
+			{
+				/* show a message indicating successful logout */
+				String message = "Password mismatch!";
+				String color = "red";
+				request.setAttribute("message", message);
+				request.setAttribute("color", color);
+				
+				/* determine form variables */
+				user.password = "";
+				request.setAttribute("user", user);
+				String formAction = new String("updateUser");
+				String formText = new String("Please modify your account information:");
+				String buttonText = new String("save");
+				
+				/* fill the form values of the Resigtration.jsp with the user info */
+				request.setAttribute("formAction", formAction);
+				request.setAttribute("formText", formText);
+				request.setAttribute("buttonText", buttonText);
+				
+				/* go to the registration page */
+				RequestDispatcher dispatcher = request.getRequestDispatcher("Registration.jsp");
+				dispatcher.forward(request, response);
+			}
 		}
-
-		/* list the users in the browser */
-		response.sendRedirect("listUsers");
+		else /* if somebody is trying to modify somebody's else profile */
+		{
+			/* go to the registration page */
+			RequestDispatcher dispatcher = request.getRequestDispatcher("logoutUser");
+			dispatcher.forward(request, response);
+		}
 	}
 	
 	/* go to joke posting form */
@@ -405,8 +463,8 @@ public class ControllerServlet extends HttpServlet
 		Joke joke = new Joke(title, description, date, sessionUserId);
 		jokeDAO.insertJoke(joke);
 
-		/* list the users in the browser */
-		response.sendRedirect("listJokes");
+		/* list the jokes in the browser */
+		listJokes(request, response);
 	}
 	
 	/* list jokes */
@@ -441,6 +499,7 @@ public class ControllerServlet extends HttpServlet
 		/* show the list of user's jokes */
 		String gender = user.getGender();
 		request.setAttribute("user", user);
+		request.setAttribute("userDAO", userDAO);
 		request.setAttribute("jokeList", jokeList);
 		request.setAttribute("gender", gender);
 		request.setAttribute("message", message);
@@ -452,7 +511,7 @@ public class ControllerServlet extends HttpServlet
 	}
 	
 	/* delete a joke */
-	private void deleteJoke(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException
+	private void deleteJoke(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
 		/* get userId from session */
 		HttpSession session = request.getSession();
@@ -468,8 +527,8 @@ public class ControllerServlet extends HttpServlet
 			jokeDAO.deleteJoke(jokeId);
 		}
 		
-		/* list the users in the browser */
-		response.sendRedirect("listJokes");
+		/* list the jokes in the browser */
+		listJokes(request, response);
 	}
 	
 	/* go to joke form */
@@ -509,8 +568,8 @@ public class ControllerServlet extends HttpServlet
 		}
 		else /* if it's not the joke owner, do nothing */
 		{
-			/* list the users in the browser */
-			response.sendRedirect("listJokes");
+			/* list the jokes in the browser */
+			listJokes(request, response);
 		}
 	}
 	
@@ -538,6 +597,6 @@ public class ControllerServlet extends HttpServlet
 		}
 
 		/* list the users in the browser */
-		response.sendRedirect("listJokes");
+		listJokes(request, response);
 	}
 }
