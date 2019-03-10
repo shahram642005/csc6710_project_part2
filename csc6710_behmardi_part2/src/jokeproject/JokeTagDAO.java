@@ -117,6 +117,34 @@ public class JokeTagDAO
 			
 			return status;
 		}
+		
+		/* get list of all jokeTags from jokeTag table */
+		public List<JokeTag> getJokeTagList(String tag) throws SQLException
+		{
+			List<JokeTag> jokeTagList = new ArrayList<JokeTag>();
+			String sqlQuery = "SELECT * FROM JokeTag WHERE jokeTagWord = ?";
+			
+			connect();
+			PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+			preparedStatement.setString(1, tag);
+			
+			
+			ResultSet result = preparedStatement.executeQuery();
+			
+			while(result.next())
+			{		
+				int jokeId = result.getInt("jokeId");
+				
+				jokeTagList.add(new JokeTag(jokeId, tag));
+			}
+			
+			result.close();
+			preparedStatement.close();
+			disconnect();
+			
+			return jokeTagList;
+		}
+		
 		/* get list of all jokeTags from jokeTag table */
 		public List<JokeTag> getJokeTagList() throws SQLException
 		{

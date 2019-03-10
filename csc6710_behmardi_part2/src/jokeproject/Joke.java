@@ -21,6 +21,11 @@ public class Joke
     {
     }
     
+    public Joke(int jokeId) 
+    {
+    	this.jokeId = jokeId;
+    }
+    
     public Joke(String jokeTitle, String jokeText, java.sql.Date jokePostDate, int postUserId)
 	{
 		this.jokeTitle = jokeTitle;

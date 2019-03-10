@@ -16,7 +16,7 @@ import java.util.List;
  *
  ***************************************************/
 
-public class FriendDAO 
+public class FavoriteJokeDAO 
 {
 		/* values to connect to the database */
 		protected String databaseURL;
@@ -25,7 +25,7 @@ public class FriendDAO
 		private Connection connection;
 		
 		/* constructors */
-		public FriendDAO(String databaseURL, String databaseUserName, String databasePassword)
+		public FavoriteJokeDAO(String databaseURL, String databaseUserName, String databasePassword)
 		{
 			this.databaseURL = databaseURL;
 			this.databaseUserName = databaseUserName;
@@ -59,27 +59,27 @@ public class FriendDAO
 		    }
 		}
 		
-		/* drop Friend table */
-		public void dropFriendTable() throws SQLException
+		/* drop FavoriteJoke table */
+		public void dropFavoriteJokeTable() throws SQLException
 		{
 			connect();
 			Statement statement = connection.createStatement();
-			statement.executeUpdate("DROP TABLE IF EXISTS Friend");
+			statement.executeUpdate("DROP TABLE IF EXISTS FavoriteJoke");
 			statement.close();
 			disconnect();
 		}
 		
-		/* create Friend table */
-		public void createFriendTable() throws SQLException
+		/* create FavoriteJoke table */
+		public void createFavoriteJokeTable() throws SQLException
 		{
 			connect();
 			Statement statement = connection.createStatement();
-			String sqlStatement = "CREATE TABLE IF NOT EXISTS Friend" +
+			String sqlStatement = "CREATE TABLE IF NOT EXISTS FavoriteJoke" +
 					              "(userId int(20) NOT NULL," +
-					              " friendUserId int(20) NOT NULL," +
-			                      " PRIMARY KEY (userId, friendUserId)," +
+					              " jokeId int(20) NOT NULL," +
+			                      " PRIMARY KEY (userId, jokeId)," +
 			         	          " FOREIGN KEY (userId) REFERENCES User(userId)," +
-					              " FOREIGN KEY (friendUserId) REFERENCES User(userId))"
+					              " FOREIGN KEY (jokeId) REFERENCES Joke(jokeId))"
 					              ;
 			statement.executeUpdate(sqlStatement);
 			statement.close();
@@ -87,29 +87,29 @@ public class FriendDAO
 			
 		}
 		
-		/* initialize Friend table */
-		public void initFriendTable() throws SQLException
+		/* initialize FavoriteJoke table */
+		public void initFavoriteJokeTable() throws SQLException
 		{			
-			insertFriend(new Friend(1,2));
-			insertFriend(new Friend(2,3));
-			insertFriend(new Friend(3,4));
-			insertFriend(new Friend(4,5));
-			insertFriend(new Friend(5,6));
-			insertFriend(new Friend(6,7));
-			insertFriend(new Friend(7,8));
-			insertFriend(new Friend(8,9));
-			insertFriend(new Friend(9,10));
+			insertFavoriteJoke(new FavoriteJoke(1,2));
+			insertFavoriteJoke(new FavoriteJoke(2,3));
+			insertFavoriteJoke(new FavoriteJoke(3,4));
+			insertFavoriteJoke(new FavoriteJoke(4,5));
+			insertFavoriteJoke(new FavoriteJoke(5,6));
+			insertFavoriteJoke(new FavoriteJoke(6,7));
+			insertFavoriteJoke(new FavoriteJoke(7,8));
+			insertFavoriteJoke(new FavoriteJoke(8,9));
+			insertFavoriteJoke(new FavoriteJoke(9,10));
 		}
 		
-		/* insert a friend to Friend table */
-		public boolean insertFriend(Friend friend) throws SQLException
+		/* insert a joke to FavoriteJoke table */
+		public boolean insertFavoriteJoke(FavoriteJoke favoriteJoke) throws SQLException
 		{
-			String sqlInsert = "INSERT INTO Friend (userId, friendUserId) " +
+			String sqlInsert = "INSERT INTO FavoriteJoke (userId, jokeId) " +
 								"VALUES (?, ?)";
 			connect();
 			PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
-			preparedStatement.setInt(1, friend.getuserId());
-			preparedStatement.setInt(2, friend.getfriendUserId());
+			preparedStatement.setInt(1, favoriteJoke.getuserId());
+			preparedStatement.setInt(2, favoriteJoke.getjokeId());
 			
 			
 			boolean status = preparedStatement.executeUpdate() > 0;
@@ -119,15 +119,15 @@ public class FriendDAO
 			return status;
 		}
 		
-		/* delete a friend from Friend table */
-		public boolean deleteFriend(Friend friend) throws SQLException
+		/* delete a joke from FavoriteJoke table */
+		public boolean deleteFavoriteJoke(FavoriteJoke favoriteJoke) throws SQLException
 		{
-			String sqlDelete = "DELETE FROM Friend WHERE userId = ? AND friendUserId = ?";
+			String sqlDelete = "DELETE FROM FavoriteJoke WHERE userId = ? AND jokeId = ?";
 			connect();
 			
 			PreparedStatement prepareStatement = connection.prepareStatement(sqlDelete);
-			prepareStatement.setInt(1, friend.getuserId());
-			prepareStatement.setInt(2, friend.getfriendUserId());
+			prepareStatement.setInt(1, favoriteJoke.getuserId());
+			prepareStatement.setInt(2, favoriteJoke.getjokeId());
 			
 			boolean status = prepareStatement.executeUpdate() > 0;
 			prepareStatement.close();
@@ -136,11 +136,11 @@ public class FriendDAO
 			return status;
 		}
 		
-		/* get list of all friends from Friend table */
-		public List<Friend> getFriendList(int userId) throws SQLException
+		/* get list of all favorite jokes from FavoriteJoke table */
+		public List<Joke> getFavoriteJokeList(int userId) throws SQLException
 		{
-			List<Friend> friendList = new ArrayList<Friend>();
-			String sqlQuery = "SELECT * FROM Friend WHERE userId=?";
+			List<Joke> jokeList = new ArrayList<Joke>();
+			String sqlQuery = "SELECT * FROM FavoriteJoke WHERE userId=?";
 			
 			connect();
 			PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
@@ -151,15 +151,15 @@ public class FriendDAO
 			
 			while(result.next())
 			{		
-				int friendUserId = result.getInt("friendUserId");
+				int jokeId = result.getInt("jokeId");
 				
-				friendList.add(new Friend(userId, friendUserId));
+				jokeList.add(new Joke(jokeId));
 			}
 			
 			result.close();
 			preparedStatement.close();
 			disconnect();
 			
-			return friendList;
+			return jokeList;
 		}
 }

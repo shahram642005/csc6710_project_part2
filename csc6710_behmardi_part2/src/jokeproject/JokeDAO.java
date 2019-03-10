@@ -97,15 +97,15 @@ public class JokeDAO
 		List<Joke> jokeList = new ArrayList<Joke>();
 		Date date = Date.valueOf(LocalDate.now());
 		jokeList.add(new Joke("joke1", "Text1", date, 1));
-		jokeList.add(new Joke("joke2", "Text2", date, 1));
-		jokeList.add(new Joke("joke3", "Text3", date, 1));
-		jokeList.add(new Joke("joke4", "Text4", date, 1));
-		jokeList.add(new Joke("joke5", "Text5", date, 1));
-		jokeList.add(new Joke("joke6", "Text6", date, 1));
-		jokeList.add(new Joke("joke7", "Text7", date, 1));
-		jokeList.add(new Joke("joke8", "Text8", date, 1));
-		jokeList.add(new Joke("joke9", "Text9", date, 1));
-		jokeList.add(new Joke("joke10", "Text10", date, 1));
+		jokeList.add(new Joke("joke2", "Text2", date, 2));
+		jokeList.add(new Joke("joke3", "Text3", date, 3));
+		jokeList.add(new Joke("joke4", "Text4", date, 4));
+		jokeList.add(new Joke("joke5", "Text5", date, 5));
+		jokeList.add(new Joke("joke6", "Text6", date, 6));
+		jokeList.add(new Joke("joke7", "Text7", date, 7));
+		jokeList.add(new Joke("joke8", "Text8", date, 8));
+		jokeList.add(new Joke("joke9", "Text9", date, 9));
+		jokeList.add(new Joke("joke10", "Text10", date, 10));
 		insertJoke(jokeList);
 	}
 	

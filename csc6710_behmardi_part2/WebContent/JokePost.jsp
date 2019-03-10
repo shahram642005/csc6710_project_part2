@@ -35,7 +35,16 @@
 					<th align="left"><a href="modifyUser?userId=0"><img src="images/femaleProfile.png" height="100px" width="100px"></a></th>
 				</c:otherwise>
 			</c:choose>
-			<th align="center"><h1><c:out value='${formText}' /><img src="images/funny.png" height="70px" width="70px"></h1></th>
+			<th>
+				<div align="center">
+					<table>
+						<tr>
+							<th><h2><c:out value='${formText}' /></h2></th>
+							<th><img src="images/funny.png" height="70px" width="70px"></th>
+						</tr>
+					</table>
+				</div>
+			</th>
 			<th align="right"><a href="logoutUser"><img src="images/logout.png" title="log out" height="70px" width="70px"></a></th>
 		</tr>
 	</table>
