@@ -131,6 +131,76 @@ public class JokeReviewDAO
 		return status;
 	}
 	
+	/* update a joke information in Joke table */
+	public boolean updateJokeReview(JokeReview jokeReview) throws SQLException
+	{
+		String sqlUpdate = "UPDATE JokeReview SET reviewScore = ?, reviewRemark = ?, reviewDate = ?" +
+							" WHERE reviewUserId = ? AND reviewJokeId = ?";
+		connect();
+		PreparedStatement prepareStatement = connection.prepareStatement(sqlUpdate);
+		prepareStatement.setString(1, jokeReview.getreviewScore());
+		prepareStatement.setString(2, jokeReview.getreviewRemark());
+		prepareStatement.setDate(3, jokeReview.getreviewDate());
+		prepareStatement.setInt(5, jokeReview.getreviewUserId());
+		prepareStatement.setInt(4, jokeReview.getreviewJokeId());
+		
+		boolean status = prepareStatement.executeUpdate() > 0;
+		prepareStatement.close();
+		disconnect();
+		
+		return status;
+	}
+	
+	/* delete a joke review from table */
+	public boolean deleteJokeReview(int userId, int jokeId) throws SQLException
+	{
+		String sqlDelete = "DELETE FROM JokeReview WHERE reviewUserId = ? AND reviewJokeId = ?";
+		connect();
+		
+		PreparedStatement prepareStatement = connection.prepareStatement(sqlDelete);
+		prepareStatement.setInt(1, userId);
+		prepareStatement.setInt(2, jokeId);
+		
+		boolean status = prepareStatement.executeUpdate() > 0;
+		prepareStatement.close();
+		disconnect();
+		
+		return status;
+	}
+	
+	/* get list of all jokeReviews from jokeReview table */
+	public JokeReview getJokeReview(int userId, int jokeId) throws SQLException
+	{
+		JokeReview jokeReview = null;
+		String sqlSelect = "SELECT * FROM JokeReview" +
+							" WHERE reviewUserId = ? AND reviewJokeId = ?";
+		
+		connect();
+		
+		PreparedStatement prepareStatement = connection.prepareStatement(sqlSelect);
+		prepareStatement.setInt(1, userId);
+		prepareStatement.setInt(2, jokeId);
+		ResultSet result = prepareStatement.executeQuery();
+		
+		while(result.next())
+		{
+			int reviewJokeId = result.getInt("reviewJokeId");
+			int reviewUserId = result.getInt("reviewUserId");
+			String reviewScore = result.getString("reviewScore");
+			String reviewRemark = result.getString("reviewRemark");
+			Date reviewDate = result.getDate("reviewDate");
+			String favoriteFlag = result.getString("favoriteFlag");
+			
+			jokeReview = new JokeReview(reviewJokeId, reviewUserId, reviewScore, reviewRemark, reviewDate, favoriteFlag);
+		}
+		
+		result.close();
+		prepareStatement.close();
+		disconnect();
+		
+		return jokeReview;
+	}
+
 	/* get list of all jokeReviews from jokeReview table */
 	public List<JokeReview> getJokeReviewList() throws SQLException
 	{

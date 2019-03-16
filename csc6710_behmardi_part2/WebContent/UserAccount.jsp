@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-<title>Welcome</title>
+	<title>Welcome</title>
 </head>
 <body>
 <!-- Check if user is logged in -->
@@ -58,15 +58,10 @@
 			<th></th>
 			<th align="left">
 				<table>
-				<tr>
-					<td><input type="radio" name="joketable" value="yourJokes" checked>your jokes
-					<input type="radio" name="joketable" value="allJokes">all jokes
-					<input type="radio" name="joketable" value="allJokes">search jokes</td>
-			    </tr>
-			    <tr>
-			    	<td><input type="search" size="40" id="mySearch" placeholder="find a joke ..."></td>
-					<td><a href="searchJoke"><img src="images/searchJoke.png" title="search joke tags" height="50px" width="50px"></a></td>
-				</tr>
+				    <tr>
+				    	<td><input type="search" size="40" id="mySearch" placeholder="find a joke ..."></td>
+						<td><a href="searchJoke"><img src="images/searchJoke.png" title="search joke tags" height="50px" width="50px"></a></td>
+					</tr>
 				</table>
 			</th>
 			<th align="center">
@@ -91,8 +86,8 @@
     <!-- listUser table (only root) -->
 	<div align="center">
     	<c:if test="${userList != null}">
-	        <table border="1">
-	            <tr>
+	        <table>
+	            <tr bgcolor="Aquamarine">
 	                <th width="20">ID</th>
 	                <th width="100">User Name</th>
 	                <th width="100">Password</th>
@@ -104,7 +99,7 @@
 	                <th width="200" colspan="3">Actions</th>
 	            </tr>
 	            <c:forEach var="user" items="${userList}">
-	                <tr>
+	                <tr bgcolor="Snow">
 	                    <td align="center"><c:out value="${user.userId}" /></td>
 	                    <td align="center"><c:out value="${user.userName}" /></td>
 	                    <td align="center"><c:out value="${user.password}" /></td>
@@ -141,68 +136,127 @@
         </c:if>
     </div>
     
-    <!-- List all jokes -->
+    <!-- List jokes -->
 	<div align="center">
 		<c:if test="${jokeList != null}">
-	        <table border="1">
-	            <tr>
+	        <table>
+	            <tr bgcolor="LightGray">
 	                <th width="20">ID</th>
 	                <th width="100">Title</th>
 	                <th width="500">Text</th>
 	                <th width="100">Date</th>
-	                <th width="100">Owner</th>
-	                <th width="200" colspan="5">Actions</th>
+	                <th width="100">User</th>
+	                <th width="200" colspan="3">Actions</th>
 	            </tr>
 	            <c:forEach var="joke" items="${jokeList}">
-	                <tr>
+	                <tr bgcolor="AliceBlue">
 	                    <td align="center"><c:out value="${joke.jokeId}" /></td>
 	                    <td align="center"><c:out value="${joke.jokeTitle}" /></td>
 	                    <td align="center"><c:out value="${joke.jokeText}" /></td>
 	                    <td align="center"><c:out value="${joke.jokePostDate}" /></td>
 	                    <td align="center"><c:out value="${userDAO.getUser(joke.postUserId).userName}" /></td>
-	                    <td align="center">
-	                        <a href="modifyJoke?jokeId=<c:out value='${joke.jokeId}' />&postUserId=<c:out value='${joke.postUserId}' />"><img src="images/edit.png"  title="edit joke" height="30%" width="30%"></a>
-	                    </td>
-	                    <td align="center">
-	                        <a href="deleteJoke?jokeId=<c:out value='${joke.jokeId}' />&postUserId=<c:out value='${joke.postUserId}' />"><img src="images/trash.png"  title="remove joke" height="30%" width="30%"></a>
-	                    </td>
-	                    <td align="center">
-	                    	<c:set var="isStarUser" value="false" />
-							<c:forEach var="friend" items="${friends}">
-							  <c:if test="${friend.friendUserId == joke.postUserId}">
-							    <c:set var="isStarUser" value="true" />
-							  </c:if>
-							</c:forEach>
-	                    	<c:choose>
-								<c:when test="${isStarUser == 'true'}">
-									<a href="unstarUser?postUserId=<c:out value='${joke.postUserId}' />"><img src="images/starUser.png" title="remove friend" height="30%" width="30%"></a>
-								</c:when>
-								<c:otherwise>
-									<a href="starUser?postUserId=<c:out value='${joke.postUserId}' />"><img src="images/unstarUser.png" title="add friend" height="30%" width="30%"></a>
-								</c:otherwise>
-							</c:choose>
-	                    </td>
-	                    <td align="center">
-	                    	<c:set var="isStarJoke" value="false" />
-							<c:forEach var="favoriteJoke" items="${favoriteJokes}">
-							  <c:if test="${favoriteJoke.jokeId == joke.jokeId}">
-							    <c:set var="isStarJoke" value="true" />
-							  </c:if>
-							</c:forEach>
-		                    <c:choose>
-								<c:when test="${isStarJoke == 'true'}">
-									<a href="unstarJoke?jokeId=<c:out value='${joke.jokeId}' />"><img src="images/starJoke.png" title="remove favorite" height="30%" width="30%"></a>
-								</c:when>
-								<c:otherwise>
-									<a href="starJoke?jokeId=<c:out value='${joke.jokeId}' />"><img src="images/unstarJoke.png" title="add favorite" height="30%" width="30%"></a>
-								</c:otherwise>
-							</c:choose>
-	                    </td>
+	                    <c:choose>
+	                    	<c:when test="${sessionUserId == 1 || joke.postUserId == sessionUserId}">
+			                    <td align="center">
+			                        <a href="modifyJoke?jokeId=<c:out value='${joke.jokeId}' />&postUserId=<c:out value='${joke.postUserId}' />"><img src="images/edit.png"  title="edit joke" height="30%" width="30%"></a>
+			                    </td>
+			                    <td align="center">
+			                        <a href="deleteJoke?jokeId=<c:out value='${joke.jokeId}' />&postUserId=<c:out value='${joke.postUserId}' />"><img src="images/trash.png"  title="remove joke" height="30%" width="30%"></a>
+			                    </td>
+		                    </c:when>
+		                    <c:otherwise>
+			                    <td align="center">
+			                    	<c:set var="isStarUser" value="false" />
+									<c:forEach var="friend" items="${friends}">
+									  <c:if test="${friend.friendUserId == joke.postUserId}">
+									    <c:set var="isStarUser" value="true" />
+									  </c:if>
+									</c:forEach>
+			                    	<c:choose>
+										<c:when test="${isStarUser == 'true'}">
+											<a href="unstarUser?postUserId=<c:out value='${joke.postUserId}' />"><img src="images/starUser.png" title="remove friend" height="30%" width="30%"></a>
+										</c:when>
+										<c:otherwise>
+											<a href="starUser?postUserId=<c:out value='${joke.postUserId}' />"><img src="images/unstarUser.png" title="add friend" height="30%" width="30%"></a>
+										</c:otherwise>
+									</c:choose>
+	                    		</td>
+			                    <td align="center">
+			                    	<c:set var="isStarJoke" value="false" />
+									<c:forEach var="favoriteJoke" items="${favoriteJokes}">
+									  <c:if test="${favoriteJoke.jokeId == joke.jokeId}">
+									    <c:set var="isStarJoke" value="true" />
+									  </c:if>
+									</c:forEach>
+				                    <c:choose>
+										<c:when test="${isStarJoke == 'true'}">
+											<a href="unstarJoke?jokeId=<c:out value='${joke.jokeId}' />"><img src="images/starJoke.png" title="remove favorite" height="30%" width="30%"></a>
+										</c:when>
+										<c:otherwise>
+											<a href="starJoke?jokeId=<c:out value='${joke.jokeId}' />"><img src="images/unstarJoke.png" title="add favorite" height="30%" width="30%"></a>
+										</c:otherwise>
+									</c:choose>
+			                    </td>
+		                    </c:otherwise>
+	                    </c:choose>
 	                    <td align="center">
 	                        <a href="newReview?jokeId=<c:out value='${joke.jokeId}' />"><img src="images/addReview.png"  title="add review" height="30%" width="30%"></a>
 	                    </td>
 	                </tr>
-	            </c:forEach>
+	                <!-- List Reviews -->
+	                <c:forEach var="jokeReview" items="${jokeReviewList}">
+	                	<c:if test="${jokeReview.reviewJokeId == joke.jokeId}">
+		                	<tr>
+		                		<td/>
+		                		<td bgcolor="Ivory" align="center">
+			               			<c:choose>
+										<c:when test="${jokeReview.reviewScore == 'poor'}">
+				                			<img src="images/star.png" height="20px" width="20px">
+				                			<img src="images/emptyStar.png" height="20px" width="20px">
+				                			<img src="images/emptyStar.png" height="20px" width="20px">
+				                			<img src="images/emptyStar.png" height="20px" width="20px">
+			                			</c:when>
+										<c:when test="${jokeReview.reviewScore == 'fair'}">
+				                			<img src="images/star.png" height="20px" width="20px">
+				                			<img src="images/star.png" height="20px" width="20px">
+				                			<img src="images/emptyStar.png" height="20px" width="20px">
+				                			<img src="images/emptyStar.png" height="20px" width="20px">
+			                			</c:when>
+										<c:when test="${jokeReview.reviewScore == 'good'}">
+				                			<img src="images/star.png" height="20px" width="20px">
+				                			<img src="images/star.png" height="20px" width="20px">
+				                			<img src="images/star.png" height="20px" width="20px">
+				                			<img src="images/emptyStar.png" height="20px" width="20px">
+			                			</c:when>
+			                			<c:otherwise>
+			                				<img src="images/star.png" height="20px" width="20px">
+				                			<img src="images/star.png" height="20px" width="20px">
+				                			<img src="images/star.png" height="20px" width="20px">
+				                			<img src="images/star.png" height="20px" width="20px">
+			                			</c:otherwise>
+			               			</c:choose>
+				                </td>
+		                		<td bgcolor="Ivory" align="center"><c:out value='${jokeReview.reviewRemark}'/></td>
+		                		<td bgcolor="Ivory" align="center"><c:out value='${jokeReview.reviewDate}'/></td>
+		                		<td bgcolor="Ivory" align="center"><c:out value="${userDAO.getUser(jokeReview.reviewUserId).userName}" /></td>
+		                		<c:choose>
+		                    		<c:when test="${sessionUserId == 1 || sessionUserId == jokeReview.reviewUserId}">
+				                		<td bgcolor="Ivory" align="center">
+				                			<a href="editReview?jokeId=<c:out value='${jokeReview.reviewJokeId}'/>&userId=<c:out value='${jokeReview.reviewUserId}'/>"><img src="images/editReview.png"  title="edit review" height="25%" width="25%"></a>
+				                		</td>
+				                		<td bgcolor="Ivory" align="center">
+				                			<a href="removeReview?jokeId=<c:out value='${jokeReview.reviewJokeId}'/>&userId=<c:out value='${jokeReview.reviewUserId}'/>"><img src="images/removeReview.png"  title="remove review" height="25%" width="25%"></a>
+				                		</td>
+			                		</c:when>
+			                		<c:otherwise>
+			                			<td bgcolor="Ivory" align="center"/>
+			                			<td bgcolor="Ivory" align="center"/>
+			                		</c:otherwise>
+		                		</c:choose>
+		                	</tr>
+	                	</c:if>
+	            	</c:forEach>
+            	</c:forEach>
 	        </table>
          </c:if>
     </div>

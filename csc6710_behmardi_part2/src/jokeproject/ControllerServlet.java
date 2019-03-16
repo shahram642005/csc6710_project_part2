@@ -123,6 +123,15 @@ public class ControllerServlet extends HttpServlet
             case "/submitReview":
             	submitReview(request, response);
             	break;
+            case "/editReview":
+            	editReview(request, response);
+            	break;
+            case "/updateReview":
+            	updateReview(request, response);
+            	break;
+            case "/removeReview":
+            	removeReview(request, response);
+            	break;
             case "/banUser":
                 //banUser(request, response);
                 //break;
@@ -525,6 +534,13 @@ public class ControllerServlet extends HttpServlet
 			friends = null;
 		}
 		
+		/* get the list of joke reviews from database */
+		List<JokeReview> jokeReviewList = jokeReviewDAO.getJokeReviewList();
+		if (jokeReviewList.isEmpty())
+		{
+			jokeReviewList = null;
+		}
+		
 		/* get the list of user's joke from database */
 		//List<Joke> jokeList = jokeDAO.getUserJokes(sessionUserId);
 		List<Joke> jokeList = jokeDAO.getJokeList();
@@ -543,17 +559,19 @@ public class ControllerServlet extends HttpServlet
 		}
 		else
 		{
-			message = "List of all your jokes:";
+			message = "List of all jokes:";
 			color = "green";
 		}
 
 		/* show the list of user's jokes */
 		String gender = user.getGender();
 		request.setAttribute("user", user);
+		request.setAttribute("sessionUserId", sessionUserId);
 		request.setAttribute("userDAO", userDAO);
 		request.setAttribute("jokeList", jokeList);
 		request.setAttribute("favoriteJokes", favoriteJokes);
 		request.setAttribute("friends", friends);
+		request.setAttribute("jokeReviewList", jokeReviewList);
 		request.setAttribute("gender", gender);
 		request.setAttribute("message", message);
 		request.setAttribute("color", color);
@@ -575,7 +593,7 @@ public class ControllerServlet extends HttpServlet
 		int jokeUserId = Integer.parseInt(request.getParameter("postUserId"));
 		
 		/* check if the session's user is the owner of the joke or it's the root user */
-		if (sessionUserId == jokeUserId || sessionUserId == 1)
+		if (sessionUserId == 1 || sessionUserId == jokeUserId)
 		{
 			jokeDAO.deleteJoke(jokeId);
 		}
@@ -597,7 +615,7 @@ public class ControllerServlet extends HttpServlet
 		int jokeUserId = Integer.parseInt(request.getParameter("postUserId"));
 		
 		/* check if the user is the owner of the joke */
-		if (sessionUserId == jokeUserId)
+		if (sessionUserId == 1 || sessionUserId == jokeUserId)
 		{
 			/* get the user information based on the userId */
 			Joke joke = jokeDAO.getJoke(jokeId);
@@ -644,7 +662,7 @@ public class ControllerServlet extends HttpServlet
 		Joke joke = new Joke(jokeId, title, description, date, userId);
 		
 		/* check if the user is the owner of the joke */
-		if (sessionUserId == userId)
+		if (sessionUserId == 1 || sessionUserId == userId)
 		{
 			jokeDAO.updateJoke(joke);
 		}
@@ -810,15 +828,6 @@ public class ControllerServlet extends HttpServlet
         dispatcher.forward(request, response);
 	}
 	
-	/* update the score for a review */
-	private void updateScore(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
-	{
-		
-		
-		RequestDispatcher dispatcher = request.getRequestDispatcher("Review.jsp");
-        dispatcher.forward(request, response);
-	}
-	
 	/* submit a review */
 	private void submitReview(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{	
@@ -835,6 +844,117 @@ public class ControllerServlet extends HttpServlet
 		/* create a user instance with the provided data and insert it into database */
 		JokeReview jokeReview = new JokeReview(jokeId, sessionUserId, score, remarks, date, null);
 		jokeReviewDAO.insertJokeReview(jokeReview);
+
+		/* list the jokes in the browser */
+		listJokes(request, response);
+	}
+	
+	/* go to review form to add a review */
+	private void editReview(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
+	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		User user = userDAO.getUser(sessionUserId);
+		
+		/* get the jokeId & userId from the request */
+		int userId = Integer.parseInt(request.getParameter("userId"));
+		int jokeId = Integer.parseInt(request.getParameter("jokeId"));
+		
+		JokeReview jokeReview = null;
+		if (sessionUserId == 1 || sessionUserId == userId)
+		{
+			/* get the review from database */
+			jokeReview = jokeReviewDAO.getJokeReview(userId, jokeId);
+		}
+		
+		/* get the score from request */
+		String scoreStr = jokeReview.getreviewScore();
+		if (scoreStr == null || scoreStr.isEmpty())
+		{
+			scoreStr = "poor";
+		}
+		
+		int score = 1;
+		
+		switch (scoreStr) 
+		{
+        	case "poor":
+        		score = 1;
+        		break;
+        	case "fair":
+        		score = 2;
+        		break;
+        	case "good":
+        		score = 3;
+        		break;
+        	case "excellent":
+        		score = 4;
+        		break;
+		}
+		
+		/* determine form variables */
+		String formAction = new String("updateReview");
+		String formText = new String("Please modify your joke review:");
+		String buttonText = new String("save");
+		String gender = user.getGender();
+		
+		/* get the joke */
+		Joke joke = jokeDAO.getJoke(jokeId);
+		
+		/* fill the form values of the Review.jsp with the user info */
+		request.setAttribute("formAction", formAction);
+		request.setAttribute("formText", formText);
+		request.setAttribute("buttonText", buttonText);
+		request.setAttribute("gender", gender);
+		request.setAttribute("score", score);
+		request.setAttribute("jokeReview", jokeReview);
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("Review.jsp");
+        dispatcher.forward(request, response);
+	}
+	
+	/* update the review in the database */
+	private void updateReview(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
+	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		
+		/* get the joke information from the registration form */
+		int jokeId = Integer.parseInt(request.getParameter("jokeId"));
+		int userId = Integer.parseInt(request.getParameter("userId"));
+		String remarks = request.getParameter("remarks");
+		String score = request.getParameter("scoreStr");
+		Date date = Date.valueOf(LocalDate.now());
+		
+		if (sessionUserId == 1 || sessionUserId == userId)
+		{
+			/* create a user instance with the provided data and insert it into database */
+			JokeReview jokeReview = new JokeReview(userId, jokeId, score, remarks, date, null);
+			jokeReviewDAO.updateJokeReview(jokeReview);
+		}
+
+		/* list the jokes in the browser */
+		listJokes(request, response);
+	}
+	
+	/* remove the review from the database */
+	private void removeReview(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
+	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		
+		/* get the joke information from the registration form */
+		int jokeId = Integer.parseInt(request.getParameter("jokeId"));
+		int userId = Integer.parseInt(request.getParameter("userId"));
+
+		if (sessionUserId == 1 || sessionUserId == userId)
+		{
+			/* delete the joke review from the database */
+			jokeReviewDAO.deleteJokeReview(userId, jokeId);
+		}
 
 		/* list the jokes in the browser */
 		listJokes(request, response);
