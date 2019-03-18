@@ -121,7 +121,7 @@ public class JokeTagDAO
 		/* get list of all jokeTags from jokeTag table */
 		public List<JokeTag> getJokeTagList(String tag) throws SQLException
 		{
-			List<JokeTag> jokeTagList = new ArrayList<JokeTag>();
+			List<JokeTag> jokeTagList =  new ArrayList<JokeTag>();
 			String sqlQuery = "SELECT * FROM JokeTag WHERE jokeTagWord = ?";
 			
 			connect();
@@ -148,7 +148,7 @@ public class JokeTagDAO
 		/* get list of all jokeTags from jokeTag table */
 		public List<JokeTag> getJokeTagList() throws SQLException
 		{
-			List<JokeTag> jokeTagList = new ArrayList<JokeTag>();
+			List<JokeTag> jokeTagList =  new ArrayList<JokeTag>();
 			String sqlQuery = "SELECT * FROM JokeTag";
 			
 			connect();
@@ -167,5 +167,32 @@ public class JokeTagDAO
 			disconnect();
 			
 			return jokeTagList;
+		}
+		//***********************************************************// 
+		// *          P  R  O  J  E  C  T   -   P A R T  2          *//
+		// *     INSERT multiple TagWords to the TagWorld table     *//
+		//***********************************************************//
+		public boolean insertJokeTag(List<JokeTag> jokeTagList) throws SQLException
+		{
+			JokeTag joketag = new JokeTag();
+			boolean status = false;
+			
+			String sqlInsert = "INSERT INTO JokeTag (jokeId, jokeTagWord) " +
+					                "VALUES (?, ?)";
+			connect();
+			for (int i = 0; i < jokeTagList.size(); i++)
+			{
+				joketag = jokeTagList.get(i);
+				
+				PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
+				preparedStatement.setInt(1, joketag.getjokeId());
+				preparedStatement.setString(2, joketag.getjokeTagWord());
+				
+				status &= preparedStatement.executeUpdate() > 0;
+				preparedStatement.close();
+			}
+			disconnect();
+			
+			return status;
 		}
 }

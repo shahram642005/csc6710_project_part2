@@ -19,7 +19,7 @@
 %>
 
 	<!-- header icons: user picture, welcome note, logout; search jokes, add joke, list users (only root) -->
-	<table style="padding-bottom:50">
+	<table>
 	<col width="600">
 	<col width="600">
 	<col width="600">
@@ -45,7 +45,7 @@
 				<div align="center">
 					<table>
 						<tr>
-							<td><h2>Welcome<c:out value=" ${user.userName}"/>!</h2></td>
+							<td><h2>Welcome<c:out value=" ${userName}"/>!</h2></td>
 							<td><img src="images/welcome.png" height="70px" width="70px"></td>
 						</tr>
 					</table>
@@ -55,81 +55,121 @@
 			<th align="right"><a href="logoutUser"><img src="images/logout.png" title="log out" height="70px" width="70px"></a></th>
 		</tr>
 		<tr>
-			<th></th>
-			<th align="left">
-				<table>
-				    <tr>
-				    	<td><input type="search" size="40" id="mySearch" placeholder="find a joke ..."></td>
-						<td><a href="searchJoke"><img src="images/searchJoke.png" title="search joke tags" height="50px" width="50px"></a></td>
-					</tr>
-				</table>
-			</th>
-			<th align="center">
+			<td/>
+			<td align="left">
+				<form action="searchJoke" method="post">
+					<table>
+					    <tr>
+					    	<td><input type="search" placeholder="find a joke ..." name="searchTag" size="50" value="<c:out value='${searchTag}'/>"/></td>
+							<td><input type="submit" value="search" /></td>
+						</tr>
+					</table>
+				</form>
+			</td>
+			<td align="center">
 				<a href="newJoke"><img src="images/newJoke.png" title="post a new joke" height="50px" width="50px"></a>
-			</th>
-			<c:if test="${userId == 1}">
-				<th align="right"><a href="listUsers"><img src="images/listUsers.png" title="list all users" height="50px" width="50px"></a></th>
-			</c:if>
-			<th></th>
+			</td>
+			<c:choose>
+				<c:when test="${userId == 1}">
+					<td align="right"><a href="listAllUsers"><img src="images/listUsers.png" title="list all users" height="50px" width="50px"></a></td>
+				</c:when>
+				<c:otherwise>
+					<td align="right"><a href="listFriends"><img src="images/listFriends.png" title="list friends" height="50px" width="50px"></a></td>
+					<td align="left"><a href="listFavoritejokes"><img src="images/ListFavoriteJokes.png" title="list favorite jokes" height="50px" width="50px"></a></td>
+				</c:otherwise>
+			</c:choose>
+		</tr>
+		<tr>
+			<!-- msg on top of the tables -->
+			<td/>
+			<td/>
+			<td>
+				<h2 style="text-align:center">
+					<br>
+				    <c:if test="${message != null && color != null}">
+				        <font color=<c:out value="${color}"></c:out>><c:out value="${message}"></c:out></font>
+				    </c:if>
+				</h2>
+			</td>
+			<td/>
+			<td/>
 		</tr>
 	</table>
-	
-	<!-- msg on top of the tables -->
-	<div>
-		<h2 style="text-align:center">
-		    <c:if test="${message != null && color != null}">
-		        <font color=<c:out value="${color}"></c:out>><c:out value="${message}"></c:out></font>
-		    </c:if>
-		</h2>
-    </div>
     
     <!-- listUser table (only root) -->
 	<div align="center">
     	<c:if test="${userList != null}">
 	        <table>
 	            <tr bgcolor="Aquamarine">
-	                <th width="20">ID</th>
+	            	<c:if test="${userId == 1}">
+	                	<th width="20">ID</th>
+                	</c:if>
 	                <th width="100">User Name</th>
-	                <th width="100">Password</th>
+	                <c:if test="${userId == 1}">
+	                	<th width="100">Password</th>
+                	</c:if>
 	                <th width="100">First Name</th>
 	                <th width="100">Last Name</th>
 	                <th width="200">Email</th>
 	                <th width="50">Gender</th>
 	                <th width="50">Age</th>
-	                <th width="200" colspan="3">Actions</th>
+	                <c:choose>
+		                <c:when test="${userId == 1}">
+		                	<th width="200" colspan="3">Actions</th>
+	                	</c:when>
+	                	<c:otherwise>
+	                		<th width="200" colspan="3">Action</th>
+	                	</c:otherwise>
+                	</c:choose>
 	            </tr>
 	            <c:forEach var="user" items="${userList}">
 	                <tr bgcolor="Snow">
-	                    <td align="center"><c:out value="${user.userId}" /></td>
+	                	<c:if test="${userId == 1}">
+	                    	<td align="center"><c:out value="${user.userId}" /></td>
+                    	</c:if>
 	                    <td align="center"><c:out value="${user.userName}" /></td>
-	                    <td align="center"><c:out value="${user.password}" /></td>
+	                    <c:if test="${userId == 1}">
+	                    	<td align="center"><c:out value="${user.password}" /></td>
+                    	</c:if>
 	                    <td align="center"><c:out value="${user.firstName}" /></td>
 	                    <td align="center"><c:out value="${user.lastName}" /></td>
 	                    <td align="center"><c:out value="${user.email}" /></td>
 	                    <td align="center"><c:out value="${user.gender}" /></td>
 	                    <td align="center"><c:out value="${user.age}" /></td>
-	                    <td align="center">
-	                        <a href="modifyUser?userId=<c:out value='${user.userId}' />"><img src="images/editUser.png" title="edit user" height="30%" width="30%"></a>
-	                    </td>
-	                    <td align="center">
-	                        <a href="deleteUser?userId=<c:out value='${user.userId}' />"><img src="images/removeUser.png" title="remove user" height="30%" width="30%"></a>
-	                    </td>
-	                    <td align="center">
-	                    	<c:set var="isBanned" value="false" />
-							<c:forEach var="bannedUser" items="${bannedUsers}">
-							  <c:if test="${user.userId == bannedUser.userId}">
-							    <c:set var="isBanned" value="true" />
-							  </c:if>
-							</c:forEach>
-		                    <c:choose>
-								<c:when test="${isBanned == 'true'}">
-									<a href="unbanUser?userId=<c:out value='${user.userId}' />"><img src="images/banUser.png" title="unban user" height="30%" width="30%"></a>
-								</c:when>
-								<c:otherwise>
-									<a href="banUser?userId=<c:out value='${user.userId}' />"><img src="images/unbanUser.png" title="ban user" height="30%" width="30%"></a>
-								</c:otherwise>
-							</c:choose>
-	                    </td>
+	                    <c:choose>
+		                	<c:when test="${userId == 1}">
+			                    <td align="center">
+			                        <a href="modifyUser?userId=<c:out value='${user.userId}' />"><img src="images/editUser.png" title="edit user" height="30%" width="30%"></a>
+			                    </td>
+			                    <td align="center">
+			                        <a href="deleteUser?userId=<c:out value='${user.userId}' />"><img src="images/removeUser.png" title="remove user" height="30%" width="30%"></a>
+			                    </td>
+			                    <td align="center">
+			                    	<c:set var="isBanned" value="false" />
+									<c:forEach var="bannedUser" items="${bannedUsers}">
+									  <c:if test="${user.userId == bannedUser.userId}">
+									    <c:set var="isBanned" value="true" />
+									  </c:if>
+									</c:forEach>
+				                    <c:choose>
+										<c:when test="${isBanned == 'true'}">
+											<a href="unbanUser?userId=<c:out value='${user.userId}' />"><img src="images/banUser.png" title="unban user" height="30%" width="30%"></a>
+										</c:when>
+										<c:otherwise>
+											<a href="banUser?userId=<c:out value='${user.userId}' />"><img src="images/unbanUser.png" title="ban user" height="30%" width="30%"></a>
+										</c:otherwise>
+									</c:choose>
+			                    </td>
+		                    </c:when>
+		                    <c:otherwise>
+		                    	<td align="center">
+		                    		<a href="unstarUser?postUserId=<c:out value='${user.userId}' />"><img src="images/favoriteUser.png" title="remove friend" height="30%" width="30%"></a>
+	                    		</td>
+		                    	<td align="center">
+		                    		<a href="listUserJokes?userId=<c:out value='${user.userId}' />"><img src="images/listJokes.png" title="list user's jokes" height="30%" width="30%"></a>
+	                    		</td>
+		                    </c:otherwise>
+	                    </c:choose>
 	                </tr>
 	            </c:forEach>
 	        </table>
@@ -167,23 +207,23 @@
 		                    <c:otherwise>
 			                    <td align="center">
 			                    	<c:set var="isStarUser" value="false" />
-									<c:forEach var="friend" items="${friends}">
-									  <c:if test="${friend.friendUserId == joke.postUserId}">
+									<c:forEach var="friend" items="${friendList}">
+									  <c:if test="${friend.userId == joke.postUserId}">
 									    <c:set var="isStarUser" value="true" />
 									  </c:if>
 									</c:forEach>
 			                    	<c:choose>
 										<c:when test="${isStarUser == 'true'}">
-											<a href="unstarUser?postUserId=<c:out value='${joke.postUserId}' />"><img src="images/starUser.png" title="remove friend" height="30%" width="30%"></a>
+											<a href="unstarUser?postUserId=<c:out value='${joke.postUserId}' />"><img src="images/favoriteUser.png" title="remove friend" height="30%" width="30%"></a>
 										</c:when>
 										<c:otherwise>
-											<a href="starUser?postUserId=<c:out value='${joke.postUserId}' />"><img src="images/unstarUser.png" title="add friend" height="30%" width="30%"></a>
+											<a href="starUser?postUserId=<c:out value='${joke.postUserId}' />"><img src="images/user.png" title="add friend" height="30%" width="30%"></a>
 										</c:otherwise>
 									</c:choose>
 	                    		</td>
 			                    <td align="center">
 			                    	<c:set var="isStarJoke" value="false" />
-									<c:forEach var="favoriteJoke" items="${favoriteJokes}">
+									<c:forEach var="favoriteJoke" items="${favoriteJokeList}">
 									  <c:if test="${favoriteJoke.jokeId == joke.jokeId}">
 									    <c:set var="isStarJoke" value="true" />
 									  </c:if>
@@ -256,6 +296,7 @@
 		                	</tr>
 	                	</c:if>
 	            	</c:forEach>
+	            	<tr><td height="1"/></tr>
             	</c:forEach>
 	        </table>
          </c:if>

@@ -72,8 +72,8 @@ public class ControllerServlet extends HttpServlet
             case "/registerUser":
                 registerUser(request, response);
                 break;
-            case "/listUsers":
-            	listUsers(request, response);
+            case "/listAllUsers":
+            	listAllUsers(request, response);
             	break;
             case "/deleteUser":
                 deleteUser(request, response);
@@ -90,8 +90,11 @@ public class ControllerServlet extends HttpServlet
             case "/postJoke":
                 postJoke(request, response);
                 break;
-            case "/listJokes":
-            	listJokes(request, response);
+            case "/listAllJokes":
+            	listAllJokes(request, response);
+            	break;
+        	case "/listUserJokes":
+            	listUserJokes(request, response);
             	break;
             case "/deleteJoke":
                 deleteJoke(request, response);
@@ -115,8 +118,14 @@ public class ControllerServlet extends HttpServlet
             	removeFromFriends(request, response);
             	break;
             case "/searchJoke":
-            	//searchJoke(request, response);
-                //break;
+            	searchJoke(request, response);
+                break;
+            case "/listFriends":
+            	listFriends(request, response);
+            	break;
+            case "/listFavoritejokes":
+            	listFavoritejokes(request, response);
+            	break;
             case "/newReview":
             	goToReviewForm(request, response);
             	break;
@@ -285,7 +294,7 @@ public class ControllerServlet extends HttpServlet
 			session.setAttribute("userId", user.getUserId());
 			
 			/* go to the UserAccount in the browser */
-			listJokes(request, response);
+			listAllJokes(request, response);
 		}		
 	}
 	
@@ -307,22 +316,64 @@ public class ControllerServlet extends HttpServlet
 		dispatcher.forward(request, response);		
 	}
 	
-	/* list users */
-	private void listUsers(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
+	/* list all users */
+	private void listAllUsers(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
 		/* get the list of users from database */
 		List<User> userList = userDAO.getUserList();
 		
+		/* list all users in the browser */
+		listUsers(request, response, userList);
+	}
+	
+	/* list all users */
+	private void listFriends(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
+	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		
+		/* get the list of users from database */
+		List<User> friendList = friendDAO.getFriendList(sessionUserId);		
+		
+		/* list all users in the browser */
+		listUsers(request, response, friendList);
+	}
+	
+	/* list users */
+	private void listUsers(HttpServletRequest request, HttpServletResponse response, List<User> userList) throws SQLException, IOException, ServletException
+	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		User user = userDAO.getUser(sessionUserId);
+		
 		/* show a message on top of the table */
 		String message;
 		String color;
-		message = "List of all Users:";
-		color = "green";
+		if (userList == null || userList.isEmpty())
+		{
+			message = "no users to show!";
+			color = "red";
+		}
+		else
+		{
+			message = "List of users:";
+			color = "green";
+		}
+		
+		if (userList.isEmpty())
+		{
+			userList = null;
+		}
 		
 		/* show the list of users to root user */
 		request.setAttribute("userList", userList);
 		request.setAttribute("message", message);
 		request.setAttribute("color", color);
+		request.setAttribute("userId", user.getUserId());
+		request.setAttribute("gender", user.getGender());
+		request.setAttribute("userName", user.getUserName());
 		
 		/* refresh the page */
         RequestDispatcher dispatcher = request.getRequestDispatcher("UserAccount.jsp");
@@ -341,8 +392,8 @@ public class ControllerServlet extends HttpServlet
 			userDAO.deleteUser(userId);
 		}
 		
-		/* list the users in the browser */
-		listUsers(request, response);
+		/* list all users in the browser */
+		listAllUsers(request, response);
 	}
 	
 	/* go to User edit form */
@@ -419,12 +470,12 @@ public class ControllerServlet extends HttpServlet
 				
 				if (sessionUserId == 1) /* if it's the root user */
 				{
-					/* list the users in the browser */
-					listUsers(request, response);
+					/* list all users in the browser */
+					listAllUsers(request, response);
 				}
 				else
 				{
-					listJokes(request, response);
+					listAllJokes(request, response);
 				}				
 			}
 			else
@@ -509,11 +560,46 @@ public class ControllerServlet extends HttpServlet
 		}
 
 		/* list the jokes in the browser */
-		listJokes(request, response);
+		listAllJokes(request, response);
+	}
+	
+	/* list all jokes */
+	private void listAllJokes(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
+	{
+		List<Joke> jokeList = jokeDAO.getJokeList();
+		
+		/* list the jokes in the browser */
+		listJokes(request, response, jokeList);
+	}
+	
+	/* list user's jokes */
+	private void listUserJokes(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
+	{
+		/* get the user's userId */
+		int userId = Integer.parseInt(request.getParameter("userId"));
+		
+		List<Joke> jokeList = jokeDAO.getUserJokes(userId);
+		
+		/* list the jokes in the browser */
+		listJokes(request, response, jokeList);
+	}
+	
+	/* list favorite jokes */
+	private void listFavoritejokes(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
+	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		int sessionUserId = Integer.parseInt(session.getAttribute("userId").toString());
+		
+		/* get user's favorite jokes */
+		List<Joke> jokeList = favoriteJokeDAO.getFavJokes(sessionUserId);
+		
+		/* list the jokes in the browser */
+		listJokes(request, response, jokeList);
 	}
 	
 	/* list jokes */
-	private void listJokes(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
+	private void listJokes(HttpServletRequest request, HttpServletResponse response, List<Joke> jokeList) throws SQLException, IOException, ServletException
 	{
 		/* get userId from session */
 		HttpSession session = request.getSession();
@@ -521,17 +607,22 @@ public class ControllerServlet extends HttpServlet
 		User user = userDAO.getUser(sessionUserId);
 		
 		/* get the list of user's favorite joke from database */
-		List<Joke> favoriteJokes = favoriteJokeDAO.getFavoriteJokeList(sessionUserId);
-		if (favoriteJokes.isEmpty())
+		List<Joke> favoriteJokeList = favoriteJokeDAO.getFavoriteJokeList(sessionUserId);
+		if (favoriteJokeList.isEmpty())
 		{
-			favoriteJokes = null;
+			favoriteJokeList = null;
 		}
 		
 		/* get the list of user's friends from database */
-		List<Friend> friends = friendDAO.getFriendList(sessionUserId);
-		if (friends.isEmpty())
+		List<User> friendList = friendDAO.getFriendList(sessionUserId);
+		if (friendList.isEmpty())
 		{
-			friends = null;
+			friendList = null;
+		}
+		
+		if (jokeList.isEmpty())
+		{
+			jokeList = null;
 		}
 		
 		/* get the list of joke reviews from database */
@@ -541,25 +632,17 @@ public class ControllerServlet extends HttpServlet
 			jokeReviewList = null;
 		}
 		
-		/* get the list of user's joke from database */
-		//List<Joke> jokeList = jokeDAO.getUserJokes(sessionUserId);
-		List<Joke> jokeList = jokeDAO.getJokeList();
-		if (jokeList.isEmpty())
-		{
-			jokeList = null;
-		}
-		
 		/* show a message on top of the table */
 		String message;
 		String color;
 		if (jokeList == null)
 		{
-			message = "You currently have no jokes, please post a joke!";
+			message = "no jokes to show!";
 			color = "red";
 		}
 		else
 		{
-			message = "List of all jokes:";
+			message = "list of jokes:";
 			color = "green";
 		}
 
@@ -569,9 +652,10 @@ public class ControllerServlet extends HttpServlet
 		request.setAttribute("sessionUserId", sessionUserId);
 		request.setAttribute("userDAO", userDAO);
 		request.setAttribute("jokeList", jokeList);
-		request.setAttribute("favoriteJokes", favoriteJokes);
-		request.setAttribute("friends", friends);
+		request.setAttribute("favoriteJokeList", favoriteJokeList);
+		request.setAttribute("friendList", friendList);
 		request.setAttribute("jokeReviewList", jokeReviewList);
+		request.setAttribute("userName", user.getUserName());
 		request.setAttribute("gender", gender);
 		request.setAttribute("message", message);
 		request.setAttribute("color", color);
@@ -599,7 +683,7 @@ public class ControllerServlet extends HttpServlet
 		}
 		
 		/* list the jokes in the browser */
-		listJokes(request, response);
+		listAllJokes(request, response);
 	}
 	
 	/* go to joke form */
@@ -640,7 +724,7 @@ public class ControllerServlet extends HttpServlet
 		else /* if it's not the joke owner, do nothing */
 		{
 			/* list the jokes in the browser */
-			listJokes(request, response);
+			listAllJokes(request, response);
 		}
 	}
 	
@@ -668,7 +752,7 @@ public class ControllerServlet extends HttpServlet
 		}
 
 		/* list the users in the browser */
-		listJokes(request, response);
+		listAllJokes(request, response);
 	}
 	
 	/* add the joke to list of the users favorite jokes */
@@ -682,10 +766,10 @@ public class ControllerServlet extends HttpServlet
 		int jokeId = Integer.parseInt(request.getParameter("jokeId"));
 		
 		/* add the joke to the user's favorite joke list */
-		favoriteJokeDAO.insertFavoriteJoke(new FavoriteJoke(sessionUserId, jokeId));
+		favoriteJokeDAO.insertFavoriteJoke(new FavoriteJoke(jokeId, sessionUserId));
 		
 		/* list the jokes in the browser */
-		listJokes(request, response);
+		listAllJokes(request, response);
 	}
 	
 	/* remove the joke from list of the users favorite jokes */
@@ -699,10 +783,10 @@ public class ControllerServlet extends HttpServlet
 		int jokeId = Integer.parseInt(request.getParameter("jokeId"));
 		
 		/* add the joke to the user's favorite joke list */
-		favoriteJokeDAO.deleteFavoriteJoke(new FavoriteJoke(sessionUserId, jokeId));
+		favoriteJokeDAO.deleteFavoriteJoke(new FavoriteJoke(jokeId, sessionUserId));
 		
 		/* list the jokes in the browser */
-		listJokes(request, response);
+		listAllJokes(request, response);
 	}
 	
 	/* add the user to list of the users friends */
@@ -723,7 +807,7 @@ public class ControllerServlet extends HttpServlet
 		}
 		
 		/* list the jokes in the browser */
-		listJokes(request, response);
+		listAllJokes(request, response);
 	}
 	
 	/* remove the user from list of the users friends */
@@ -744,7 +828,7 @@ public class ControllerServlet extends HttpServlet
 		}
 		
 		/* list the jokes in the browser */
-		listJokes(request, response);
+		listAllJokes(request, response);
 	}
 	
 	/* remove the user from list of the users friends */
@@ -754,22 +838,28 @@ public class ControllerServlet extends HttpServlet
 		List<Joke> jokeList = new ArrayList<Joke>();
 		
 		/* get the tag from the form */
-		String tag = request.getParameter("mySearch");
+		String tag = request.getParameter("searchTag");
 		
 		/* find all the jokes with the specified tag */
-		List<JokeTag> jokeTagList = jokeTagDAO.getJokeTagList(tag);
-		
-		for (JokeTag jokTag : jokeTagList)
+		jokeList = jokeDAO.getJokeTagList(tag);
+		if (jokeList.isEmpty())
 		{
-			int jokeId = jokTag.getjokeId();
-			jokeList.add(jokeDAO.getJoke(jokeId));
+			jokeList = null;
 		}
 		
-		/* show the list of found jokes */
-		request.setAttribute("jokeList", jokeList);
-		
-		/* list the jokes in the browser */
-		listJokes(request, response);
+		if (!tag.isEmpty())
+		{
+			/* show the list of found jokes */
+			request.setAttribute("searchTag", tag);
+			
+			/* list the jokes in the browser */
+			listJokes(request, response, jokeList);
+		}
+		else
+		{
+			/* list all jokes in the browser */
+			listAllJokes(request, response);
+		}
 	}
 	
 	/* go to review form to add a review */
@@ -781,13 +871,12 @@ public class ControllerServlet extends HttpServlet
 		User user = userDAO.getUser(sessionUserId);
 		
 		/* get the score from request */
-		String scoreStr = request.getParameter("score");
-		if (scoreStr == null || scoreStr.isEmpty())
+		int score = 1;
+		String scoreStr = request.getParameter("scoreStr");
+		if (scoreStr == null)
 		{
 			scoreStr = "poor";
 		}
-		
-		int score = 1;
 		
 		switch (scoreStr) 
 		{
@@ -806,13 +895,13 @@ public class ControllerServlet extends HttpServlet
 		}
 		
 		/* determine form variables */
-		int jokeId = Integer.parseInt(request.getParameter("jokeId"));
 		String formAction = new String("submitReview");
 		String formText = new String("Please Review the joke:");
 		String buttonText = new String("review");
 		String gender = user.getGender();
 		
 		/* get the joke */
+		int jokeId = Integer.parseInt(request.getParameter("jokeId"));
 		Joke joke = jokeDAO.getJoke(jokeId);
 		
 		/* fill the form values of the Review.jsp with the user info */
@@ -842,11 +931,11 @@ public class ControllerServlet extends HttpServlet
 		Date date = Date.valueOf(LocalDate.now());
 		
 		/* create a user instance with the provided data and insert it into database */
-		JokeReview jokeReview = new JokeReview(jokeId, sessionUserId, score, remarks, date, null);
+		JokeReview jokeReview = new JokeReview(jokeId, sessionUserId, score, remarks, date);
 		jokeReviewDAO.insertJokeReview(jokeReview);
 
 		/* list the jokes in the browser */
-		listJokes(request, response);
+		listAllJokes(request, response);
 	}
 	
 	/* go to review form to add a review */
@@ -860,8 +949,9 @@ public class ControllerServlet extends HttpServlet
 		/* get the jokeId & userId from the request */
 		int userId = Integer.parseInt(request.getParameter("userId"));
 		int jokeId = Integer.parseInt(request.getParameter("jokeId"));
+		String scoreStr = request.getParameter("scoreStr");
 		
-		JokeReview jokeReview = null;
+		JokeReview jokeReview = new JokeReview();
 		if (sessionUserId == 1 || sessionUserId == userId)
 		{
 			/* get the review from database */
@@ -869,13 +959,11 @@ public class ControllerServlet extends HttpServlet
 		}
 		
 		/* get the score from request */
-		String scoreStr = jokeReview.getreviewScore();
+		int score = 1;
 		if (scoreStr == null || scoreStr.isEmpty())
 		{
-			scoreStr = "poor";
+			scoreStr = jokeReview.getreviewScore();
 		}
-		
-		int score = 1;
 		
 		switch (scoreStr) 
 		{
@@ -899,15 +987,13 @@ public class ControllerServlet extends HttpServlet
 		String buttonText = new String("save");
 		String gender = user.getGender();
 		
-		/* get the joke */
-		Joke joke = jokeDAO.getJoke(jokeId);
-		
 		/* fill the form values of the Review.jsp with the user info */
 		request.setAttribute("formAction", formAction);
 		request.setAttribute("formText", formText);
 		request.setAttribute("buttonText", buttonText);
 		request.setAttribute("gender", gender);
 		request.setAttribute("score", score);
+		request.setAttribute("scoreStr", scoreStr);
 		request.setAttribute("jokeReview", jokeReview);
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("Review.jsp");
@@ -931,12 +1017,12 @@ public class ControllerServlet extends HttpServlet
 		if (sessionUserId == 1 || sessionUserId == userId)
 		{
 			/* create a user instance with the provided data and insert it into database */
-			JokeReview jokeReview = new JokeReview(userId, jokeId, score, remarks, date, null);
+			JokeReview jokeReview = new JokeReview(jokeId, userId, score, remarks, date);
 			jokeReviewDAO.updateJokeReview(jokeReview);
 		}
 
 		/* list the jokes in the browser */
-		listJokes(request, response);
+		listAllJokes(request, response);
 	}
 	
 	/* remove the review from the database */
@@ -957,6 +1043,6 @@ public class ControllerServlet extends HttpServlet
 		}
 
 		/* list the jokes in the browser */
-		listJokes(request, response);
+		listAllJokes(request, response);
 	}
 }

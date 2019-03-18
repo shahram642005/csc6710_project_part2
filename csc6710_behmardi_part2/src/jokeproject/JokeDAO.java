@@ -15,7 +15,6 @@ import java.util.List;
  * JokeDAO.java
  * This DAO class provides CRUD operation for Joke table
  * @author Gwen Hickey
- *
  ***************************************************/
 
 public class JokeDAO
@@ -200,7 +199,7 @@ public class JokeDAO
 		return status;
 	}
 	
-	/* get a joke from Joke table based on jokerId */
+	/* get a joke from Joke table based on jokeId */
 	public Joke getJoke(int jokeId) throws SQLException
 	{
 		Joke joke = null;
@@ -231,7 +230,7 @@ public class JokeDAO
 	/* get a user's joked from Joke table */
 	public List<Joke> getUserJokes(int userId) throws SQLException
 	{
-		List<Joke> jokeList = new ArrayList<Joke>();
+		List<Joke> jokeList =  new ArrayList<Joke>();
 		String sqlGet = "SELECT * FROM Joke WHERE postUserId = ?";
 		connect();
 		
@@ -260,7 +259,7 @@ public class JokeDAO
 	/* get list of all jokes from joke table */
 	public List<Joke> getJokeList() throws SQLException
 	{
-		List<Joke> jokeList = new ArrayList<Joke>();
+		List<Joke> jokeList =  new ArrayList<Joke>();
 		String sqlQuery = "SELECT * FROM Joke";
 		
 		connect();
@@ -283,7 +282,41 @@ public class JokeDAO
 		disconnect();
 		
 		return jokeList;
-
+	}
+	
+	//*************************************************//
+    //*         P R O J E C T  -  P A R T  2          */
+    //* get a joke from Joke table based on tag word  */
+	//*************************************************//
+	public List<Joke> getJokeTagList(String tag) throws SQLException
+	{
+	    List<Joke> JokeByTag =  new ArrayList<Joke>();
+	    String sqlQuery = 
+	           "SELECT *" +
+	            " FROM (Joke joke, JokeTag tag)" +
+	            " WHERE (joke.jokeId = tag.jokeId AND tag.jokeTagWord = ?)" +
+	            " ORDER BY joke.jokeTitle";
+		connect();
+		PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+		preparedStatement.setString(1, tag);
+		ResultSet result = preparedStatement.executeQuery();
+		
+		while (result.next())
+		{
+			int jokeId = result.getInt("jokeId");
+			String jokeTitle = result.getString("jokeTitle");
+			String jokeText = result.getString("jokeText");
+			java.sql.Date jokePostDate =  result.getDate("jokePostDate");
+			int postUserId = result.getInt("postUserId");
+			
+			Joke joke = new Joke(jokeId, jokeTitle, jokeText, jokePostDate, postUserId);			
+			JokeByTag.add(joke);
+		}
+	    result.close();
+	    preparedStatement.close();
+		disconnect();
+		
+		return JokeByTag;
 	}
 }
 

@@ -14,23 +14,21 @@ public class JokeReview {
 	protected String reviewScore;
 	protected String reviewRemark;
 	protected java.sql.Date reviewDate;
-	protected String favoriteFlag;
 
     /* constructors */
     public JokeReview() 
     {
     }
-    public JokeReview(int reviewJokeId, int reviewUserId, String reviewScore, String reviewRemark, java.sql.Date reviewDate, String favoriteFlag)
+    public JokeReview(int reviewJokeId, int reviewUserId, String reviewScore, String reviewRemark, java.sql.Date reviewDate)
 	{
 		this.reviewJokeId = reviewJokeId;
 		this.reviewUserId = reviewUserId;
 		this.reviewScore = reviewScore;
 		this.reviewRemark = reviewRemark;
 		this.reviewDate = reviewDate;
-		this.favoriteFlag = favoriteFlag;
 	}
-/* define accessors and setters methods */
-    
+
+    /* define accessors and setters methods */
     //reviewJokeId
 	public int getreviewJokeId()
 	{
@@ -81,15 +79,6 @@ public class JokeReview {
 		this.reviewDate = reviewDate;
 	}
 	
-	//favoriteFlag
-		public String getfavoriteFlag()
-		{
-			return favoriteFlag;
-		}
-		public void setfavoriteFlag(String favoriteFlag)
-		{
-			this.favoriteFlag = favoriteFlag;
-		}
 }
 
 	

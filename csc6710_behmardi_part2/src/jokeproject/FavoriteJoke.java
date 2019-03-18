@@ -1,43 +1,34 @@
 package jokeproject;
 
 /***************************************************
- * Friend.java
- * This is a model class representing a friend entity
+ * FavoriteJoke.java
+ * This is a model class representing a favorite joke entity
  * @author Gwen Hickey
  *
+ * P R O J E C T  -  P A R T  2
  ***************************************************/
 
 
 public class FavoriteJoke 
 {
-	/* attributes of Friend class */
-	protected int userId;
+	/* attributes of FavoriteJoke class */
 	protected int jokeId;
+	protected int userId;
 	
     /* constructors */
     public FavoriteJoke() 
     {
     }
 
-    public FavoriteJoke(int userId, int jokeId)
+    public FavoriteJoke(int jokeId, int userId)
 	{
-		this.userId = userId;
 		this.jokeId = jokeId;
+		this.userId = userId;
 	}
     
     /* define accessors and setters methods */
     
-    //userId
-	public int getuserId()
-	{
-		return userId;
-	}
-	public void setuserId(int userId)
-	{
-		this.userId = userId;
-	}
-	
-	//jokeId
+    //jokeId
 	public int getjokeId()
 	{
 		return jokeId;
@@ -45,5 +36,15 @@ public class FavoriteJoke
 	public void setjokeId(int jokeId)
 	{
 		this.jokeId = jokeId;
+	}
+	
+	//userId
+	public int getuserId()
+	{
+		return userId;
+	}
+	public void setuserId(int userId)
+	{
+		this.userId = userId;
 	}
 }

@@ -57,46 +57,81 @@
 			                <c:when test="${jokeReview != null}">
 			                    <input type="hidden" name="jokeId" value="<c:out value='${jokeReview.getreviewJokeId()}' />" />
 			                    <input type="hidden" name="userId" value="<c:out value='${jokeReview.getreviewUserId()}' />" />
-			                    <input type="hidden" name="scoreStr" value="<c:out value='${jokeReview.getreviewScore()}' />" />
+			                    <input type="hidden" name="scoreStr" value="<c:out value='${scoreStr}' />" />
 			                </c:when>
 			                <c:when test="${joke != null}">
 			                	<input type="hidden" name="jokeId" value="<c:out value='${joke.getjokeId()}' />" />
 			                    <input type="hidden" name="userId" value="<c:out value='${joke.getpostUserId()}' />" />
-			                    <input type="hidden" name="scoreStr" value="poor" />
+			                    <input type="hidden" name="scoreStr" value="<c:out value='${scoreStr}' />" />
 			                </c:when>
 		                </c:choose>
 	                </td>
 				</tr>
 	            <tr><td>Score:</td></tr>
-	            <tr>
-	                <td>
-	                	<a href="newReview?score=poor&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/star.png" title="poor" height="30px" width="30px"></a>
-               			<c:choose>
-							<c:when test="${score > 1}">
-	                			<a href="newReview?score=fair&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/star.png" title="fair" height="30px" width="30px"></a>
-                			</c:when>
-                			<c:otherwise>
-                				<a href="newReview?score=fair&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/emptyStar.png" title="fair" height="30px" width="30px"></a>
-                			</c:otherwise>
-               			</c:choose>
-               			<c:choose>
-							<c:when test="${score > 2}">
-	                			<a href="newReview?score=good&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/star.png" title="good" height="30px" width="30px"></a>
-                			</c:when>
-                			<c:otherwise>
-                				<a href="newReview?score=good&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/emptyStar.png" title="good" height="30px" width="30px"></a>
-                			</c:otherwise>
-               			</c:choose>
-               			<c:choose>
-							<c:when test="${score > 3}">
-	                			<a href="newReview?score=excellent&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/star.png" title="excellent" height="30px" width="30px"></a>
-                			</c:when>
-                			<c:otherwise>
-                				<a href="newReview?score=excellent&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/emptyStar.png" title="excellent" height="30px" width="30px"></a>
-                			</c:otherwise>
-               			</c:choose>
-	                </td>
-	            </tr>
+            	<c:choose>
+			        <c:when test="${jokeReview != null}">
+			            <tr>
+			                <td>
+			                	<a href="editReview?scoreStr=poor&jokeId=<c:out value='${jokeReview.getreviewJokeId()}' />&userId=<c:out value='${jokeReview.getreviewUserId()}' />"><img src="images/star.png" title="poor" height="30px" width="30px"></a>
+		               			<c:choose>
+									<c:when test="${score > 1}">
+			                			<a href="editReview?scoreStr=fair&jokeId=<c:out value='${jokeReview.getreviewJokeId()}' />&userId=<c:out value='${jokeReview.getreviewUserId()}' />"><img src="images/star.png" title="fair" height="30px" width="30px"></a>
+		                			</c:when>
+		                			<c:otherwise>
+		                				<a href="editReview?scoreStr=fair&jokeId=<c:out value='${jokeReview.getreviewJokeId()}' />&userId=<c:out value='${jokeReview.getreviewUserId()}' />"><img src="images/emptyStar.png" title="fair" height="30px" width="30px"></a>
+		                			</c:otherwise>
+		               			</c:choose>
+		               			<c:choose>
+									<c:when test="${score > 2}">
+			                			<a href="editReview?scoreStr=good&jokeId=<c:out value='${jokeReview.getreviewJokeId()}' />&userId=<c:out value='${jokeReview.getreviewUserId()}' />"><img src="images/star.png" title="good" height="30px" width="30px"></a>
+		                			</c:when>
+		                			<c:otherwise>
+		                				<a href="editReview?scoreStr=good&jokeId=<c:out value='${jokeReview.getreviewJokeId()}' />&userId=<c:out value='${jokeReview.getreviewUserId()}' />"><img src="images/emptyStar.png" title="good" height="30px" width="30px"></a>
+		                			</c:otherwise>
+		               			</c:choose>
+		               			<c:choose>
+									<c:when test="${score > 3}">
+			                			<a href="editReview?scoreStr=excellent&jokeId=<c:out value='${jokeReview.getreviewJokeId()}' />&userId=<c:out value='${jokeReview.getreviewUserId()}' />"><img src="images/star.png" title="excellent" height="30px" width="30px"></a>
+		                			</c:when>
+		                			<c:otherwise>
+		                				<a href="editReview?scoreStr=excellent&jokeId=<c:out value='${jokeReview.getreviewJokeId()}' />&userId=<c:out value='${jokeReview.getreviewUserId()}' />"><img src="images/emptyStar.png" title="excellent" height="30px" width="30px"></a>
+		                			</c:otherwise>
+		               			</c:choose>
+			                </td>
+			            </tr>
+		            </c:when>
+	                <c:when test="${joke != null}">
+	                	<tr>
+			                <td>
+			                	<a href="newReview?scoreStr=poor&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/star.png" title="poor" height="30px" width="30px"></a>
+		               			<c:choose>
+									<c:when test="${score > 1}">
+			                			<a href="newReview?scoreStr=fair&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/star.png" title="fair" height="30px" width="30px"></a>
+		                			</c:when>
+		                			<c:otherwise>
+		                				<a href="newReview?scoreStr=fair&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/emptyStar.png" title="fair" height="30px" width="30px"></a>
+		                			</c:otherwise>
+		               			</c:choose>
+		               			<c:choose>
+									<c:when test="${score > 2}">
+			                			<a href="newReview?scoreStr=good&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/star.png" title="good" height="30px" width="30px"></a>
+		                			</c:when>
+		                			<c:otherwise>
+		                				<a href="newReview?scoreStr=good&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/emptyStar.png" title="good" height="30px" width="30px"></a>
+		                			</c:otherwise>
+		               			</c:choose>
+		               			<c:choose>
+									<c:when test="${score > 3}">
+			                			<a href="newReview?scoreStr=excellent&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/star.png" title="excellent" height="30px" width="30px"></a>
+		                			</c:when>
+		                			<c:otherwise>
+		                				<a href="newReview?scoreStr=excellent&jokeId=<c:out value='${joke.getjokeId()}' />"><img src="images/emptyStar.png" title="excellent" height="30px" width="30px"></a>
+		                			</c:otherwise>
+		               			</c:choose>
+			                </td>
+			            </tr>
+	                </c:when>
+                </c:choose>
 	            <tr><td>Remarks:</td></tr>
 	            <tr>
 	                <td><input type="text" name="remarks" size="50" autofocus placeholder="remarks ..." value="<c:out value='${jokeReview.getreviewRemark()}' />"/></td>

@@ -42,7 +42,15 @@ public class Joke
 		this.jokePostDate = jokePostDate;
 		this.postUserId = postUserId;
 	}
-
+    
+    //*******  P R O J E C T  -  P A R T  2    ***********//
+    public Joke(String jokeTitle, String jokeText, int postUserId)
+	{
+		this.jokeTitle = jokeTitle;
+		this.jokeText = jokeText;
+		this.postUserId = postUserId;
+	}
+    
     /* define accessors and setters methods */
     
     //jokeId

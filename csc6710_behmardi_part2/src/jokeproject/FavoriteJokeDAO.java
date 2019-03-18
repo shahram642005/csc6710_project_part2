@@ -10,10 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /***************************************************
- * JokeTagDAO.java
- * This DAO class provides CRUD operation for JokeTag table
+ * FavoriteJokeDAO.java
+ * This DAO class provides CRUD operation for FavoriteJoke table
  * @author Gwen Hickey
  *
+ *  P R O J E C T  -  P A R T  2
  ***************************************************/
 
 public class FavoriteJokeDAO 
@@ -75,11 +76,11 @@ public class FavoriteJokeDAO
 			connect();
 			Statement statement = connection.createStatement();
 			String sqlStatement = "CREATE TABLE IF NOT EXISTS FavoriteJoke" +
-					              "(userId int(20) NOT NULL," +
-					              " jokeId int(20) NOT NULL," +
-			                      " PRIMARY KEY (userId, jokeId)," +
-			         	          " FOREIGN KEY (userId) REFERENCES User(userId)," +
-					              " FOREIGN KEY (jokeId) REFERENCES Joke(jokeId))"
+					              "(jokeId int(20) NOT NULL," +
+					              " userId int(20) NOT NULL," +
+			                      " PRIMARY KEY (jokeId, userId)," +
+			         	          " FOREIGN KEY (jokeId) REFERENCES Joke (jokeId)," +
+					              " FOREIGN KEY (userId) REFERENCES User(userId))"
 					              ;
 			statement.executeUpdate(sqlStatement);
 			statement.close();
@@ -101,15 +102,15 @@ public class FavoriteJokeDAO
 			insertFavoriteJoke(new FavoriteJoke(9,10));
 		}
 		
-		/* insert a joke to FavoriteJoke table */
+		/* insert a favorite joke to FavoriteJoke table */
 		public boolean insertFavoriteJoke(FavoriteJoke favoriteJoke) throws SQLException
 		{
-			String sqlInsert = "INSERT INTO FavoriteJoke (userId, jokeId) " +
+			String sqlInsert = "INSERT INTO FavoriteJoke (jokeId, userId) " +
 								"VALUES (?, ?)";
 			connect();
 			PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
-			preparedStatement.setInt(1, favoriteJoke.getuserId());
-			preparedStatement.setInt(2, favoriteJoke.getjokeId());
+			preparedStatement.setInt(1, favoriteJoke.getjokeId());
+			preparedStatement.setInt(2, favoriteJoke.getuserId());
 			
 			
 			boolean status = preparedStatement.executeUpdate() > 0;
@@ -119,18 +120,18 @@ public class FavoriteJokeDAO
 			return status;
 		}
 		
-		/* delete a joke from FavoriteJoke table */
+		//**********************************************************// 
+	    //*          DELETE a favorite FROM Favorite table         *//
+		//**********************************************************//
 		public boolean deleteFavoriteJoke(FavoriteJoke favoriteJoke) throws SQLException
 		{
-			String sqlDelete = "DELETE FROM FavoriteJoke WHERE userId = ? AND jokeId = ?";
+			String sqlUpdate = "DELETE FROM FavoriteJoke WHERE (userId = ? AND jokeId = ?)";
 			connect();
-			
-			PreparedStatement prepareStatement = connection.prepareStatement(sqlDelete);
-			prepareStatement.setInt(1, favoriteJoke.getuserId());
-			prepareStatement.setInt(2, favoriteJoke.getjokeId());
-			
-			boolean status = prepareStatement.executeUpdate() > 0;
-			prepareStatement.close();
+			PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate);
+			preparedStatement.setInt(1, favoriteJoke.getuserId());
+			preparedStatement.setInt(2, favoriteJoke.getjokeId());
+			boolean status = preparedStatement.executeUpdate() > 0;
+			preparedStatement.close();
 			disconnect();
 			
 			return status;
@@ -161,5 +162,63 @@ public class FavoriteJokeDAO
 			disconnect();
 			
 			return jokeList;
+		}
+		
+		//*************************************************//
+	    //*         P R O J E C T  -  P A R T  2          */
+	    //*         get user's favorite jokes             */
+		//*************************************************//
+		public List<Joke> getFavJokes(int userId) throws SQLException
+		{
+			List<Joke> FavJokes =  new ArrayList<Joke>();
+			String sqlQuery = "SELECT *" +
+				    		  " FROM (Joke joke, FavoriteJoke fav)" +
+				    		  " WHERE (joke.jokeId = fav.jokeId AND fav.UserId = ?)" +
+				    		  " ORDER BY joke.jokeTitle ";
+			connect();
+			PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+			preparedStatement.setInt(1, userId);
+			ResultSet result = preparedStatement.executeQuery();
+			
+			while(result.next())
+			{
+				int jokeId = result.getInt("jokeId");
+				String jokeTitle = result.getString("jokeTitle");
+				String jokeText = result.getString("jokeText");
+				java.sql.Date jokePostDate = result.getDate("jokePostDate");
+				int postUserId = result.getInt("postUserId");
+				
+				Joke joke = new Joke(jokeId, jokeTitle, jokeText, jokePostDate, postUserId);				
+				FavJokes.add(joke);
+			}
+			result.close();
+			preparedStatement.close();
+			disconnect();
+			
+			return FavJokes;
+	    }
+		
+		/* get list of all favorite jokes from FavoriteJoke table */
+		public List<FavoriteJoke> getFavoriteJokeList() throws SQLException
+		{
+			List<FavoriteJoke> favoriteJokeList =  new ArrayList<FavoriteJoke>();
+			String sqlQuery = "SELECT * FROM FavoriteJoke";
+			
+			connect();
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(sqlQuery);
+			
+			while(result.next())
+			{
+				int jokeId = result.getInt("jokeId");			
+				int userId = result.getInt("userId");
+				
+				favoriteJokeList.add(new FavoriteJoke(jokeId, userId));
+			}
+			result.close();
+			statement.close();
+			disconnect();
+			
+			return favoriteJokeList;
 		}
 }

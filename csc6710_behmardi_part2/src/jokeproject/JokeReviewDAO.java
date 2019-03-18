@@ -82,8 +82,7 @@ public class JokeReviewDAO
 		                      " reviewScore varchar(25) DEFAULT NULL," + 
 				              " CHECK (reviewScore = 'excellent' or 'good' or 'fair' or 'poor')," +
 		                      " reviewRemark varchar(250) DEFAULT NULL ," + 
-		                      " reviewDate date DEFAULT NULL," +
-				              " favoriteFlag char(1) DEFAULT 'N'," +  
+		                      " reviewDate date DEFAULT NULL," + 
 		                      " PRIMARY KEY (reviewUserId, reviewJokeId)," +
 				              " FOREIGN KEY (reviewUserId) REFERENCES User (userId)," +
 		         	          " FOREIGN KEY (reviewJokeId) REFERENCES Joke (jokeId))" 
@@ -91,30 +90,29 @@ public class JokeReviewDAO
 		statement.executeUpdate(sqlStatement);
 		statement.close();
 		disconnect();
-			
 	}
 	
 	/* initialize JokeReview table */
 	public void initJokereviewTable() throws SQLException
 	{
 		Date date = Date.valueOf(LocalDate.now());
-		insertJokeReview(new JokeReview(1, 1, "excellent", null, date, null));
-		insertJokeReview(new JokeReview(2, 2, "good", null, date, null));
-		insertJokeReview(new JokeReview(3, 3, "fair", null, date, null));
-		insertJokeReview(new JokeReview(4, 4, "poor", null, date, null));
-		insertJokeReview(new JokeReview(5, 5, "excellent", null, date, null));
-		insertJokeReview(new JokeReview(6, 6, "good", null, date, null));
-		insertJokeReview(new JokeReview(7, 7, "fair", null, date, null));
-		insertJokeReview(new JokeReview(8, 8, "poor", null, date, null));
-		insertJokeReview(new JokeReview(9, 9, "excellent", null, date, null));
-		insertJokeReview(new JokeReview(10, 10, "good", null, date, null));
+		insertJokeReview(new JokeReview(1, 2, "excellent", null, date));
+		insertJokeReview(new JokeReview(2, 3, "good", null, date));
+		insertJokeReview(new JokeReview(3, 4, "fair", null, date));
+		insertJokeReview(new JokeReview(4, 5, "poor", null, date));
+		insertJokeReview(new JokeReview(5, 6, "excellent", null, date));
+		insertJokeReview(new JokeReview(6, 7, "good", null, date));
+		insertJokeReview(new JokeReview(7, 8, "fair", null, date));
+		insertJokeReview(new JokeReview(8, 9, "poor", null, date));
+		insertJokeReview(new JokeReview(9, 10, "excellent", null, date));
+		insertJokeReview(new JokeReview(10, 1, "good", null, date));
 	}
 	
 	/* insert a joke to JokeReview table */
 	public boolean insertJokeReview(JokeReview jokeReview) throws SQLException
 	{
-		String sqlInsert = "INSERT INTO JokeReview (reviewJokeId, reviewUserId, reviewScore, reviewRemark, reviewDate, favoriteFlag) " +
-							"VALUES (?, ?, ?, ?, ?, ?)";
+		String sqlInsert = "INSERT INTO JokeReview (reviewJokeId, reviewUserId, reviewScore, reviewRemark, reviewDate) " +
+							"VALUES (?, ?, ?, ?, ?)";
 		connect();
 		PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
 		preparedStatement.setInt(1, jokeReview.getreviewJokeId());
@@ -122,7 +120,6 @@ public class JokeReviewDAO
 		preparedStatement.setString(3, jokeReview.getreviewScore());
 		preparedStatement.setString(4, jokeReview.getreviewRemark());
 		preparedStatement.setDate(5, jokeReview.getreviewDate());
-		preparedStatement.setString(6, jokeReview.getfavoriteFlag());
 		
 		boolean status = preparedStatement.executeUpdate() > 0;
 		preparedStatement.close();
@@ -141,8 +138,8 @@ public class JokeReviewDAO
 		prepareStatement.setString(1, jokeReview.getreviewScore());
 		prepareStatement.setString(2, jokeReview.getreviewRemark());
 		prepareStatement.setDate(3, jokeReview.getreviewDate());
-		prepareStatement.setInt(5, jokeReview.getreviewUserId());
-		prepareStatement.setInt(4, jokeReview.getreviewJokeId());
+		prepareStatement.setInt(4, jokeReview.getreviewUserId());
+		prepareStatement.setInt(5, jokeReview.getreviewJokeId());
 		
 		boolean status = prepareStatement.executeUpdate() > 0;
 		prepareStatement.close();
@@ -189,9 +186,8 @@ public class JokeReviewDAO
 			String reviewScore = result.getString("reviewScore");
 			String reviewRemark = result.getString("reviewRemark");
 			Date reviewDate = result.getDate("reviewDate");
-			String favoriteFlag = result.getString("favoriteFlag");
 			
-			jokeReview = new JokeReview(reviewJokeId, reviewUserId, reviewScore, reviewRemark, reviewDate, favoriteFlag);
+			jokeReview = new JokeReview(reviewJokeId, reviewUserId, reviewScore, reviewRemark, reviewDate);
 		}
 		
 		result.close();
@@ -204,7 +200,7 @@ public class JokeReviewDAO
 	/* get list of all jokeReviews from jokeReview table */
 	public List<JokeReview> getJokeReviewList() throws SQLException
 	{
-		List<JokeReview> jokeReviewList = new ArrayList<JokeReview>();
+		List<JokeReview> jokeReviewList =  new ArrayList<JokeReview>();
 		String sqlQuery = "SELECT * FROM JokeReview";
 		
 		connect();
@@ -218,9 +214,8 @@ public class JokeReviewDAO
 			String reviewScore = result.getString("reviewScore");
 			String reviewRemark = result.getString("reviewRemark");
 			Date reviewDate = result.getDate("reviewDate");
-			String favoriteFlag = result.getString("favoriteFlag");
 			
-			jokeReviewList.add(new JokeReview(reviewJokeId, reviewUserId, reviewScore, reviewRemark, reviewDate, favoriteFlag));
+			jokeReviewList.add(new JokeReview(reviewJokeId, reviewUserId, reviewScore, reviewRemark, reviewDate));
 		}
 		result.close();
 		statement.close();

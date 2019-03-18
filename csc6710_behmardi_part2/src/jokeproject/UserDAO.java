@@ -266,7 +266,7 @@ public class UserDAO
 	/* get list of all users from user table */
 	public List<User> getUserList() throws SQLException
 	{
-		List<User> userList = new ArrayList<User>();
+		List<User> userList =  new ArrayList<User>();
 		String sqlQuery = "SELECT * FROM User";
 		
 		connect();

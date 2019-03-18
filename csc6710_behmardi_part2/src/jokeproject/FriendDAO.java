@@ -122,25 +122,25 @@ public class FriendDAO
 		/* delete a friend from Friend table */
 		public boolean deleteFriend(Friend friend) throws SQLException
 		{
-			String sqlDelete = "DELETE FROM Friend WHERE userId = ? AND friendUserId = ?";
+			String sqlUpdate = "DELETE FROM Friend WHERE (userId = ? AND friendUserId = ?)";
 			connect();
-			
-			PreparedStatement prepareStatement = connection.prepareStatement(sqlDelete);
-			prepareStatement.setInt(1, friend.getuserId());
-			prepareStatement.setInt(2, friend.getfriendUserId());
-			
-			boolean status = prepareStatement.executeUpdate() > 0;
-			prepareStatement.close();
+			PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate);
+			preparedStatement.setInt(1, friend.getuserId());
+			preparedStatement.setInt(2, friend.getfriendUserId());
+			boolean status = preparedStatement.executeUpdate() > 0;
+			preparedStatement.close();
 			disconnect();
 			
 			return status;
 		}
 		
 		/* get list of all friends from Friend table */
-		public List<Friend> getFriendList(int userId) throws SQLException
+		public List<User> getFriendList(int userId) throws SQLException
 		{
-			List<Friend> friendList = new ArrayList<Friend>();
-			String sqlQuery = "SELECT * FROM Friend WHERE userId=?";
+			List<User> friendList =  new ArrayList<User>();
+			String sqlQuery = "SELECT *" +
+								" FROM (Friend friend, User user)" +
+								" WHERE friend.userId = ? AND user.userId = friend.friendUserId";
 			
 			connect();
 			PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
@@ -150,14 +150,45 @@ public class FriendDAO
 			ResultSet result = preparedStatement.executeQuery();
 			
 			while(result.next())
-			{		
+			{
 				int friendUserId = result.getInt("friendUserId");
+				String userName = result.getString("userName");
+				String firstName = result.getString("firstName");
+				String password = "";
+				String lastName = result.getString("lastName");
+				String email = result.getString("email");
+				String gender = result.getString("gender");
+				int age = result.getInt("age");
 				
-				friendList.add(new Friend(userId, friendUserId));
+				friendList.add(new User(friendUserId,userName, password, firstName, lastName, email, gender, age));
 			}
 			
 			result.close();
 			preparedStatement.close();
+			disconnect();
+			
+			return friendList;
+		}
+		
+		/* get list of all friends from Friend table */
+		public List<Friend> getFriendList() throws SQLException
+		{
+			List<Friend> friendList =  new ArrayList<Friend>();
+			String sqlQuery = "SELECT * FROM Friend";
+			
+			connect();
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(sqlQuery);
+			
+			while(result.next())
+			{
+				int userId = result.getInt("userId");			
+				int friendUserId = result.getInt("friendUserId");
+				
+				friendList.add(new Friend(userId, friendUserId));
+			}
+			result.close();
+			statement.close();
 			disconnect();
 			
 			return friendList;
