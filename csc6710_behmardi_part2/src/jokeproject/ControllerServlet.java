@@ -142,15 +142,15 @@ public class ControllerServlet extends HttpServlet
 	            case "/removeReview":
 	            	removeReview(request, response);
 	            	break;
+	            case "/goBack":
+	            	goToLastPage(request, response);
+	            	break;
 	            case "/banUser":
 	                //banUser(request, response);
 	                //break;
 	            case "/unbanUser":
 	            	//unbanUser(request, response);
 	                //break;
-	            case "/goBack":
-	            	goToLastPage(request, response);
-	            	break;
 	            default:
 	            	throw new ServletException("The action \"" + action + "\" has not been implemented yet!");
             }
