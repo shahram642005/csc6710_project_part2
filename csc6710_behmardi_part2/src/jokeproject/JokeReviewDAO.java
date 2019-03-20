@@ -92,7 +92,7 @@ public class JokeReviewDAO
 						"  BEGIN" + 
 						"      IF (SELECT COUNT(*) FROM JokeReview" + 
 						"                         WHERE (reviewDate = current_date()" + 
-						"                           AND reviewUserId = NEW.reviewUserId)) > 5" + 
+						"                           AND reviewUserId = NEW.reviewUserId)) > 4" + 
 						"	  THEN SIGNAL SQLSTATE '45000'" + 
 						"		   SET MESSAGE_TEXT = 'Cannot review more than 5 jokes per day';" + 
 						"      END IF;" + 

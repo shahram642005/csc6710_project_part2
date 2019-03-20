@@ -91,7 +91,7 @@ public class JokeDAO
 						"  BEGIN" + 
 						"      IF (SELECT COUNT(*) FROM Joke" + 
 						"                         WHERE (jokePostDate = current_date()" + 
-						"                           AND postUserId = NEW.postUserId)) > 5" + 
+						"                           AND postUserId = NEW.postUserId)) > 4" + 
 						"	  THEN SIGNAL SQLSTATE '45000'" + 
 						"		   SET MESSAGE_TEXT = 'Cannot post more than 5 jokes per day';" + 
 						"      END IF;" + 
