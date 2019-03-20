@@ -15,28 +15,32 @@
 	{
 		int userId = Integer.parseInt(session.getAttribute("userId").toString());
 	}
+	session.setAttribute("lastPage", "listAllJokes");
 %>
 	<table style="padding-bottom:50">
+	<col width="600">
+	<col width="600">
 	<col width="600">
 	<col width="600">
 	<col width="600">
 		<tr>
 			<c:choose>
 			<c:when test="${userId == 1}">
-					<th align="left"><a href="modifyUser?userId=1"><img src="images/admin.png" height="100px" width="100px"></a></th>
+					<th align="left"><a href="modifyUser?userId=1"><img src="images/admin.png" title="edit profile" height="100px" width="100px"></a></th>
 				</c:when>
 				<c:when test="${gender == null}">
-					<th align="left"><a href="modifyUser?userId=0"><img src="images/nogenderProfile.png" height="100px" width="100px"></a></th>
+					<th align="left"><a href="modifyUser?userId=0"><img src="images/nogenderProfile.png" title="edit profile" height="100px" width="100px"></a></th>
 				</c:when>
 				<c:when test="${gender eq 'Male'}">
-					<th align="left"><a href="modifyUser?userId=0"><img src="images/maleProfile.png" height="100px" width="100px"></a></th>
+					<th align="left"><a href="modifyUser?userId=0"><img src="images/maleProfile.png" title="edit profile" height="100px" width="100px"></a></th>
 				</c:when>
 				<c:otherwise>
-					<th align="left"><a href="modifyUser?userId=0"><img src="images/femaleProfile.png" height="100px" width="100px"></a></th>
+					<th align="left"><a href="modifyUser?userId=0"><img src="images/femaleProfile.png" title="edit profile" height="100px" width="100px"></a></th>
 				</c:otherwise>
 			</c:choose>
+			<th align="left"><a href="listAllJokes"><img src="images/home.png" title="home" height="70px" width="70px"></a></th>
 			<th>
-				<div align="center">
+				<div align="left">
 					<table>
 						<tr>
 							<th><h2><c:out value='${formText}' /></h2></th>
@@ -45,6 +49,7 @@
 					</table>
 				</div>
 			</th>
+			<th></th>
 			<th align="right"><a href="logoutUser"><img src="images/logout.png" title="log out" height="70px" width="70px"></a></th>
 		</tr>
 	</table>

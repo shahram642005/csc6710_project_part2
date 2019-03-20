@@ -6,6 +6,15 @@
 <title>Login</title>
 </head>
 <body>
+	<%
+	if(session.getAttribute("userId") != null)
+	{
+		RequestDispatcher dispatcher = request.getRequestDispatcher("listAllJokes");
+        dispatcher.forward(request, response);
+	}
+	session.setAttribute("lastPage", "listAllJokes");
+	%>
+	
 	<table style="padding-bottom:50">
 	<col width="600">
 	<col width="600">
@@ -14,7 +23,7 @@
 	<col width="600">
 		<tr>
 		<tr>
-			<th align="left"><a href="modifyUser?userId=0"><img src="images/nogenderProfile.png" height="100px" width="100px"></a></th>
+			<th/>
 			<th></th>
 			<th align="center"><h2>Please login or register!</h2></th>
 			<th></th>

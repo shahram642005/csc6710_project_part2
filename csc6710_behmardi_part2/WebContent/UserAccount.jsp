@@ -16,6 +16,7 @@
 	{
 		int userId = Integer.parseInt(session.getAttribute("userId").toString());
 	}
+	session.setAttribute("lastPage", "listAllJokes");
 %>
 
 	<!-- header icons: user picture, welcome note, logout; search jokes, add joke, list users (only root) -->
@@ -28,19 +29,19 @@
 		<tr >
 			<c:choose>
 				<c:when test="${userId == 1}">
-					<th align="left"><a href="modifyUser?userId=1"><img src="images/admin.png" height="100px" width="100px"></a></th>
+					<th align="left"><a href="modifyUser?userId=1"><img src="images/admin.png" title="edit profile" height="100px" width="100px"></a></th>
 				</c:when>
 				<c:when test="${gender == null}">
-					<th align="left"><a href="modifyUser?userId=0"><img src="images/nogenderProfile.png" height="100px" width="100px"></a></th>
+					<th align="left"><a href="modifyUser?userId=0"><img src="images/nogenderProfile.png" title="edit profile" height="100px" width="100px"></a></th>
 				</c:when>
 				<c:when test="${gender eq 'Male'}">
-					<th align="left"><a href="modifyUser?userId=0"><img src="images/maleProfile.png" height="100px" width="100px"></a></th>
+					<th align="left"><a href="modifyUser?userId=0"><img src="images/maleProfile.png" title="edit profile" height="100px" width="100px"></a></th>
 				</c:when>
 				<c:otherwise>
-					<th align="left"><a href="modifyUser?userId=0"><img src="images/femaleProfile.png" height="100px" width="100px"></a></th>
+					<th align="left"><a href="modifyUser?userId=0"><img src="images/femaleProfile.png" title="edit profile" height="100px" width="100px"></a></th>
 				</c:otherwise>
 			</c:choose>
-			<th></th>
+			<th align="left"><a href="listAllJokes"><img src="images/home.png" title="home" height="70px" width="70px"></a></th>
 			<th>
 				<div align="center">
 					<table>
@@ -60,8 +61,8 @@
 				<form action="searchJoke" method="post">
 					<table>
 					    <tr>
-					    	<td><input type="search" placeholder="find a joke ..." name="searchTag" size="50" value="<c:out value='${searchTag}'/>"/></td>
-							<td><input type="submit" value="search" /></td>
+					    	<td><input type="search" placeholder="find a joke by tag ..." title="type a joke tag" name="searchTag" size="50" value="<c:out value='${searchTag}'/>"/></td>
+							<td><input type="submit" title="search" value="search" /></td>
 						</tr>
 					</table>
 				</form>
@@ -196,13 +197,25 @@
 	                    <td align="center"><c:out value="${joke.jokePostDate}" /></td>
 	                    <td align="center"><c:out value="${userDAO.getUser(joke.postUserId).userName}" /></td>
 	                    <c:choose>
-	                    	<c:when test="${sessionUserId == 1 || joke.postUserId == sessionUserId}">
+	                    	<c:when test="${sessionUserId == 1}">
 			                    <td align="center">
 			                        <a href="modifyJoke?jokeId=<c:out value='${joke.jokeId}' />&postUserId=<c:out value='${joke.postUserId}' />"><img src="images/edit.png"  title="edit joke" height="30%" width="30%"></a>
 			                    </td>
 			                    <td align="center">
 			                        <a href="deleteJoke?jokeId=<c:out value='${joke.jokeId}' />&postUserId=<c:out value='${joke.postUserId}' />"><img src="images/trash.png"  title="remove joke" height="30%" width="30%"></a>
 			                    </td>
+			                    <td align="center">
+			                        <a href="newReview?jokeId=<c:out value='${joke.jokeId}' />"><img src="images/addReview.png"  title="add review" height="30%" width="30%"></a>
+			                    </td>
+		                    </c:when>
+		                    <c:when test="${joke.postUserId == sessionUserId}">
+		                    	<td align="center">
+			                        <a href="modifyJoke?jokeId=<c:out value='${joke.jokeId}' />&postUserId=<c:out value='${joke.postUserId}' />"><img src="images/edit.png"  title="edit joke" height="30%" width="30%"></a>
+			                    </td>
+			                    <td align="center">
+			                        <a href="deleteJoke?jokeId=<c:out value='${joke.jokeId}' />&postUserId=<c:out value='${joke.postUserId}' />"><img src="images/trash.png"  title="remove joke" height="30%" width="30%"></a>
+			                    </td>
+			                    <td align="center">-</td>
 		                    </c:when>
 		                    <c:otherwise>
 			                    <td align="center">
@@ -237,11 +250,11 @@
 										</c:otherwise>
 									</c:choose>
 			                    </td>
+			                    <td align="center">
+			                        <a href="newReview?jokeId=<c:out value='${joke.jokeId}' />"><img src="images/addReview.png"  title="add review" height="30%" width="30%"></a>
+			                    </td>
 		                    </c:otherwise>
 	                    </c:choose>
-	                    <td align="center">
-	                        <a href="newReview?jokeId=<c:out value='${joke.jokeId}' />"><img src="images/addReview.png"  title="add review" height="30%" width="30%"></a>
-	                    </td>
 	                </tr>
 	                <!-- List Reviews -->
 	                <c:forEach var="jokeReview" items="${jokeReviewList}">

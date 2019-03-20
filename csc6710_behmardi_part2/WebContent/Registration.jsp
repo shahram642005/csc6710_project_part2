@@ -6,6 +6,8 @@
 	<title>Registration</title>
 </head>
 <body>
+	<% session.setAttribute("lastPage", "newUser"); %>
+	
     <div align="center">
     	<h2><c:out value='${formText}' /></h2>
     	<form action="<c:out value='${formAction}' />" method="post">
@@ -25,19 +27,19 @@
 	            <tr>
 	                <td><input type="text" name="lastName" size="50" placeholder="last name" value="<c:out value='${user.lastName}' />"/></td>
 	            </tr>
-				<tr><td>User Name:</td></tr>
+				<tr><td>User Name:<font color="red">*</font></td></tr>
 	            <tr>
 	                <td><input type="text" name="userName" size="50" placeholder="user name" value="<c:out value='${user.userName}' />"/></td>
 	            </tr>
-	            <tr><td>Password:</td></tr>
+	            <tr><td>Password:<font color="red">*</font></td></tr>
 	            <tr>
 	                <td><input type="password" name="password" size="50" placeholder="password" value="<c:out value='${user.password}' />"/></td>
 	            </tr>
-	            <tr><td>Confirm Password:</td></tr>
+	            <tr><td>Confirm Password:<font color="red">*</font></td></tr>
 	            <tr>
 	                <td><input type="password" name="confirmPassword" size="50" placeholder="confirm password" value="<c:out value='${confirmPassword}' />"/></td>
 	            </tr>
-	            <tr><td>Email:</td></tr>
+	            <tr><td>Email:<font color="red">*</font></td></tr>
 	            <tr>
 	                <td><input type="email" name="email" size="50" placeholder="userId@email.com" value="<c:out value='${user.email}' />"/></td>
 	            </tr>

@@ -85,8 +85,18 @@ public class JokeReviewDAO
 		                      " reviewDate date DEFAULT NULL," + 
 		                      " PRIMARY KEY (reviewUserId, reviewJokeId)," +
 				              " FOREIGN KEY (reviewUserId) REFERENCES User (userId)," +
-		         	          " FOREIGN KEY (reviewJokeId) REFERENCES Joke (jokeId))" 
-				              ;
+		         	          " FOREIGN KEY (reviewJokeId) REFERENCES Joke (jokeId))";
+		statement.executeUpdate(sqlStatement);
+		sqlStatement = 	"  CREATE TRIGGER fivereviewlimit BEFORE INSERT ON JokeReview" + 
+						"  FOR EACH ROW" + 
+						"  BEGIN" + 
+						"      IF (SELECT COUNT(*) FROM JokeReview" + 
+						"                         WHERE (reviewDate = current_date()" + 
+						"                           AND reviewUserId = NEW.reviewUserId)) > 5" + 
+						"	  THEN SIGNAL SQLSTATE '45000'" + 
+						"		   SET MESSAGE_TEXT = 'Cannot review more than 5 jokes per day';" + 
+						"      END IF;" + 
+						"  END";
 		statement.executeUpdate(sqlStatement);
 		statement.close();
 		disconnect();

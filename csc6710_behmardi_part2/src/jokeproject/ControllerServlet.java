@@ -56,110 +56,119 @@ public class ControllerServlet extends HttpServlet
         String action = request.getServletPath();
         
         try {
-            switch (action) {
-            case "/initTables":
-            	initializeDatabase(request, response);
-            	break;
-            case "/newUser":
-            	goToRegisterForm(request, response);
-                break;
-            case "/loginUser":
-            	loginUser(request, response);
-            	break;
-            case "/logoutUser":
-            	logoutUser(request, response);
-            	break;
-            case "/registerUser":
-                registerUser(request, response);
-                break;
-            case "/listAllUsers":
-            	listAllUsers(request, response);
-            	break;
-            case "/deleteUser":
-                deleteUser(request, response);
-                break;
-            case "/modifyUser":
-                goToUserEditForm(request, response);
-                break;
-            case "/updateUser":
-                updateUser(request, response);
-                break;
-            case "/newJoke":
-            	goToJokePostForm(request, response);
-                break;
-            case "/postJoke":
-                postJoke(request, response);
-                break;
-            case "/listAllJokes":
-            	listAllJokes(request, response);
-            	break;
-        	case "/listUserJokes":
-            	listUserJokes(request, response);
-            	break;
-            case "/deleteJoke":
-                deleteJoke(request, response);
-                break;
-            case "/modifyJoke":
-                goToJokeEditForm(request, response);
-                break;
-            case "/updateJoke":
-                updateJoke(request, response);
-                break;
-            case "/starJoke":
-            	addToFavoriteJokes(request, response);
-            	break;
-            case "/unstarJoke":
-            	removeFromFavoriteJokes(request, response);
-            	break;
-            case "/starUser":
-            	addToFriends(request, response);
-            	break;
-            case "/unstarUser":
-            	removeFromFriends(request, response);
-            	break;
-            case "/searchJoke":
-            	searchJoke(request, response);
-                break;
-            case "/listFriends":
-            	listFriends(request, response);
-            	break;
-            case "/listFavoritejokes":
-            	listFavoritejokes(request, response);
-            	break;
-            case "/newReview":
-            	goToReviewForm(request, response);
-            	break;
-            case "/submitReview":
-            	submitReview(request, response);
-            	break;
-            case "/editReview":
-            	editReview(request, response);
-            	break;
-            case "/updateReview":
-            	updateReview(request, response);
-            	break;
-            case "/removeReview":
-            	removeReview(request, response);
-            	break;
-            case "/banUser":
-                //banUser(request, response);
-                //break;
-            case "/unbanUser":
-            	//unbanUser(request, response);
-                //break;
-            default:
-            	throw new ServletException("The action \"" + action + "\" has not been implemented yet!");
+            switch (action) 
+            {
+	            case "/initTables":
+	            	initializeDatabase(request, response);
+	            	break;
+	            case "/newUser":
+	            	goToRegisterForm(request, response);
+	                break;
+	            case "/loginUser":
+	            	loginUser(request, response);
+	            	break;
+	            case "/logoutUser":
+	            	logoutUser(request, response);
+	            	break;
+	            case "/registerUser":
+	                registerUser(request, response);
+	                break;
+	            case "/listAllUsers":
+	            	listAllUsers(request, response);
+	            	break;
+	            case "/deleteUser":
+	                deleteUser(request, response);
+	                break;
+	            case "/modifyUser":
+	                goToUserEditForm(request, response);
+	                break;
+	            case "/updateUser":
+	                updateUser(request, response);
+	                break;
+	            case "/newJoke":
+	            	goToJokePostForm(request, response);
+	                break;
+	            case "/postJoke":
+	                postJoke(request, response);
+	                break;
+	            case "/listAllJokes":
+	            	listAllJokes(request, response);
+	            	break;
+	        	case "/listUserJokes":
+	            	listUserJokes(request, response);
+	            	break;
+	            case "/deleteJoke":
+	                deleteJoke(request, response);
+	                break;
+	            case "/modifyJoke":
+	                goToJokeEditForm(request, response);
+	                break;
+	            case "/updateJoke":
+	                updateJoke(request, response);
+	                break;
+	            case "/starJoke":
+	            	addToFavoriteJokes(request, response);
+	            	break;
+	            case "/unstarJoke":
+	            	removeFromFavoriteJokes(request, response);
+	            	break;
+	            case "/starUser":
+	            	addToFriends(request, response);
+	            	break;
+	            case "/unstarUser":
+	            	removeFromFriends(request, response);
+	            	break;
+	            case "/searchJoke":
+	            	searchJoke(request, response);
+	                break;
+	            case "/listFriends":
+	            	listFriends(request, response);
+	            	break;
+	            case "/listFavoritejokes":
+	            	listFavoritejokes(request, response);
+	            	break;
+	            case "/newReview":
+	            	goToReviewForm(request, response);
+	            	break;
+	            case "/submitReview":
+	            	submitReview(request, response);
+	            	break;
+	            case "/editReview":
+	            	editReview(request, response);
+	            	break;
+	            case "/updateReview":
+	            	updateReview(request, response);
+	            	break;
+	            case "/removeReview":
+	            	removeReview(request, response);
+	            	break;
+	            case "/banUser":
+	                //banUser(request, response);
+	                //break;
+	            case "/unbanUser":
+	            	//unbanUser(request, response);
+	                //break;
+	            case "/goBack":
+	            	goToLastPage(request, response);
+	            	break;
+	            default:
+	            	throw new ServletException("The action \"" + action + "\" has not been implemented yet!");
             }
         }
-        catch (SQLException ex)
+        catch (Exception exception)
         {
-            throw new ServletException(ex);
+            JokeExceptionHandler jokeException = new JokeExceptionHandler(exception);
+            jokeException.showOnErrorPage(request, response);
         }
     }
 	
 	/* insert a user into User table */
 	private void initializeDatabase(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
 	{
+		/* add lastPage to session and set it to Login.jsp page */
+		HttpSession session = request.getSession();
+		session.setAttribute("lastPage", "Login.jsp");
+		
 		/* create all the database tables and populate them with tuples */
 		favoriteJokeDAO.dropFavoriteJokeTable();
 		jokeTagDAO.dropJokeTagTable();
@@ -229,19 +238,18 @@ public class ControllerServlet extends HttpServlet
 		/* create a user instance with the provided data and insert it into database */
 		User user = new User(userName, password, firstName, lastName, email, gender, age);
 		
-		if (!password.isEmpty() && password.equals(confirmPassword)) /* successful match between password and its confirmation */
+		/* if the required fields are blank, then throw an error to the user */
+		if (userName.isBlank() || password.isBlank() || confirmPassword.isBlank() || email.isBlank() || !password.equals(confirmPassword))
 		{
-			/* insert the user to database */
-			userDAO.insertUser(user);
-	
-			/* go to the login page */
-			RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
-			dispatcher.forward(request, response);
-		}
-		else
-		{
-			/* show a message indicating successful logout */
-			String message = "Password mismatch!";
+			String message = new String();
+			if (!password.equals(confirmPassword))
+			{
+				message = "Password mismatch!";
+			}
+			else
+			{
+				message = "Please fill out all of the required fields!";
+			}
 			String color = "red";
 			request.setAttribute("message", message);
 			request.setAttribute("color", color);
@@ -260,6 +268,15 @@ public class ControllerServlet extends HttpServlet
 			
 			/* go to the registration page */
 			RequestDispatcher dispatcher = request.getRequestDispatcher("Registration.jsp");
+			dispatcher.forward(request, response);
+		}
+		else /* successful match between password and its confirmation */
+		{
+			/* insert the user to database */
+			userDAO.insertUser(user);
+	
+			/* go to the login page */
+			RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
 			dispatcher.forward(request, response);
 		}
 	}
@@ -304,7 +321,6 @@ public class ControllerServlet extends HttpServlet
 		/* remove userId from session */
 		HttpSession session = request.getSession();
 		session.removeAttribute("userId");
-		session.invalidate();
 		
 		/* show a message indicating successful logout */
 		String message = "You are successfully logged out!";
@@ -842,12 +858,8 @@ public class ControllerServlet extends HttpServlet
 		
 		/* find all the jokes with the specified tag */
 		jokeList = jokeDAO.getJokeTagList(tag);
-		if (jokeList.isEmpty())
-		{
-			jokeList = null;
-		}
 		
-		if (!tag.isEmpty())
+		if (!tag.isBlank())
 		{
 			/* show the list of found jokes */
 			request.setAttribute("searchTag", tag);
@@ -1044,5 +1056,16 @@ public class ControllerServlet extends HttpServlet
 
 		/* list the jokes in the browser */
 		listAllJokes(request, response);
+	}
+	
+	/* remove the review from the database */
+	private void goToLastPage(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException
+	{
+		/* get userId from session */
+		HttpSession session = request.getSession();
+		String lastPage = session.getAttribute("lastPage").toString();
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher(lastPage);
+        dispatcher.forward(request, response);
 	}
 }

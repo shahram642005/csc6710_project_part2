@@ -85,6 +85,18 @@ public class JokeDAO
 				              " PRIMARY KEY (jokeId)," +
 				              " FOREIGN KEY (postUserId) REFERENCES User(userId))";
 		statement.executeUpdate(sqlStatement);
+		statement.executeUpdate(sqlStatement);
+		sqlStatement =	"  CREATE TRIGGER fivejokelimit BEFORE INSERT ON Joke" + 
+						"  FOR EACH ROW\n" + 
+						"  BEGIN" + 
+						"      IF (SELECT COUNT(*) FROM Joke" + 
+						"                         WHERE (jokePostDate = current_date()" + 
+						"                           AND postUserId = NEW.postUserId)) > 5" + 
+						"	  THEN SIGNAL SQLSTATE '45000'" + 
+						"		   SET MESSAGE_TEXT = 'Cannot post more than 5 jokes per day';" + 
+						"      END IF;" + 
+						"  END";
+		statement.executeUpdate(sqlStatement);
 		statement.close();
 		disconnect();
 	}
